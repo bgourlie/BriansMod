@@ -40,7 +40,7 @@
 				{
 					if (!killer.Equals(victim))
 					{
-						pvpDeath = new PvpDeath(victim, killer, lastInjury.HitInfo.damageTypes.GetMajorityDamageType());
+						pvpDeath = new PvpDeath(victim, killer, lastInjury.PrimaryDamageType);
 						return true;
 					}
 				}
