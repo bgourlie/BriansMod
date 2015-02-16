@@ -71,10 +71,10 @@
     <Compile Include="IInjuryTracker.cs" />
     <Compile Include="InjuryTracker.cs" />
     <Compile Include="Model\Injury.cs" />
-    <Compile Include="PvpDeathResolver.cs" />
+    <Compile Include="DeathResolver.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IData.cs" />
-    <Compile Include="IPvpDeathResolver.cs" />
+    <Compile Include="IDeathResolver.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Model\PvpDeath.cs" />

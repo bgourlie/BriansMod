@@ -4,26 +4,26 @@
 
 	using UnityEngine;
 
-	public class PvpDeathResolver : IPvpDeathResolver
+	public class DeathResolver : IDeathResolver
 	{
-		private const string Module = "PvpDeathResolver";
+		private const string Module = "DeathResolver";
 
 		private readonly ILogger logger;
 
 		private readonly IInjuryTracker injuryTracker;
 
-		public PvpDeathResolver()
+		public DeathResolver()
 			: this(Logger.Instance, InjuryTracker.Instance)
 		{
 		}
 
-		public PvpDeathResolver(ILogger logger, IInjuryTracker injuryTracker)
+		public DeathResolver(ILogger logger, IInjuryTracker injuryTracker)
 		{
 			this.logger = logger;
 			this.injuryTracker = injuryTracker;
 		}
 
-		public bool TryResolve(MonoBehaviour entity, HitInfo hitinfo, out PvpDeath pvpDeath)
+		public bool TryResolvePvpDeath(MonoBehaviour entity, HitInfo hitinfo, out PvpDeath pvpDeath)
 		{
 			var victim = entity as BasePlayer;
 			if (victim != null)

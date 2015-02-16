@@ -14,7 +14,7 @@
 
 		private readonly ILogger logger;
 
-		private readonly IPvpDeathResolver pvpDeathResolver;
+		private readonly IDeathResolver deathResolver;
 
 		private readonly IInjuryTracker injuryTracker;
 
@@ -26,7 +26,7 @@
 			this.Title = "Brian's Mod";
 			this.Author = "W. Brian Gourlie";
 			this.HasConfig = false;
-			this.pvpDeathResolver = new PvpDeathResolver();
+			this.deathResolver = new DeathResolver();
 			this.logger = logger;
 			this.data = data;
 			this.injuryTracker = injuryTracker;
@@ -64,7 +64,7 @@
 		private void OnEntityDeath(MonoBehaviour entity, HitInfo hitinfo)
 		{
 			PvpDeath pvpDeath;
-			if (this.pvpDeathResolver.TryResolve(entity, hitinfo, out pvpDeath))
+			if (this.deathResolver.TryResolvePvpDeath(entity, hitinfo, out pvpDeath))
 			{
 				this.chat.Broadcast(pvpDeath.ToString());
 				this.data.RecordDeath(pvpDeath);
