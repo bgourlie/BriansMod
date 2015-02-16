@@ -31,24 +31,41 @@
 
 		public void UpdateInjuryStatus(BasePlayer player, HitInfo hitInfo)
 		{
-			if (player == hitInfo.Initiator && hitInfo.damageTypes.GetMajorityDamageType() == DamageType.Bleeding)
+			if (player.IsDead() 
+				|| (player == hitInfo.Initiator && hitInfo.damageTypes.GetMajorityDamageType() == DamageType.Bleeding))
 			{
-				// Don't update anything if the "injury" is bleeding caused by a previous injury.
+				// Don't update anything if the player is dead or the "injury" is bleeding caused by a previous injury.
 				return;
 			}
 
-			var lastInjury = new Injury(DateTime.UtcNow, hitInfo);
-			this.logger.Info(Module, "Damage updated for {0}: {1}", player.displayName, lastInjury);
+			var newInjury = new Injury(DateTime.UtcNow, hitInfo);
+			bool updated = false;
 			lock (this.State)
 			{
-				if (!this.State.ContainsKey(player.userID))
+				Injury prevInjury;
+				if(!this.State.TryGetValue(player.userID, out prevInjury))
 				{
-					this.State.Add(player.userID, lastInjury);
+					this.State.Add(player.userID, newInjury);
+					updated = true;
 				}
 				else
 				{
-					this.State[player.userID] = lastInjury;
+					// If the previous injury and the new injury were both self-inflicted
+					// and have the same damage type, don't update it (very spammy).
+					// This is probably a micro optimization, but fuck it.
+					if (!(prevInjury.HitInfo.Initiator == player
+						&& newInjury.HitInfo.Initiator == player &&
+						prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
+					{
+						this.State[player.userID] = newInjury;
+						updated = true;
+					}
 				}
+			}
+
+			if (updated)
+			{
+				this.logger.Info(Module, "Damage updated for {0}: {1}", player.displayName, newInjury);
 			}
 		}
 
