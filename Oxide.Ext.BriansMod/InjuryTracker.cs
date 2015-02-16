@@ -46,41 +46,35 @@
 			var newInjury = new Injury(hitInfo.Initiator, majorityDamageType, injuryDistance, DateTime.UtcNow);
 			bool updated = false;
 
-			lock (this.State)
+			Injury prevInjury;
+			if(!this.State.TryGetValue(player.userID, out prevInjury))
 			{
-				Injury prevInjury;
-				if(!this.State.TryGetValue(player.userID, out prevInjury))
+				this.State.Add(player.userID, newInjury);
+				updated = true;
+			}
+			else
+			{
+				// If the previous injury and the new injury were both self-inflicted
+				// and have the same damage type, don't update it (very spammy).
+				// This is probably a micro optimization, but fuck it.
+				if (!(prevInjury.CausedBy == player && 
+					newInjury.CausedBy == player && 
+					prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
 				{
-					this.State.Add(player.userID, newInjury);
+					this.State[player.userID] = newInjury;
 					updated = true;
-				}
-				else
-				{
-					// If the previous injury and the new injury were both self-inflicted
-					// and have the same damage type, don't update it (very spammy).
-					// This is probably a micro optimization, but fuck it.
-					if (!(prevInjury.CausedBy == player && 
-						newInjury.CausedBy == player && 
-						prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
-					{
-						this.State[player.userID] = newInjury;
-						updated = true;
-					}
 				}
 			}
 
 			if (updated)
 			{
-				this.logger.Info(Module, "Damage updated for {0}: {1}", player.displayName, newInjury);
+				this.logger.Debug("Updated injury for {0} to {1}", player.displayName, newInjury);
 			}
 		}
 
 		public bool TryGetLastInjury(BasePlayer player, out Injury injury)
 		{
-			lock (this.State)
-			{
-				return this.State.TryGetValue(player.userID, out injury);
-			}
+			return this.State.TryGetValue(player.userID, out injury);
 		}
 	}
 }
