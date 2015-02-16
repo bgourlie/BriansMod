@@ -7,6 +7,8 @@
 
 	using Model;
 
+	using UnityEngine;
+
 	public class InjuryTracker : IInjuryTracker
 	{
 		private const string Module = "InjuryTracker";
@@ -38,8 +40,12 @@
 				return;
 			}
 
-			var newInjury = new Injury(DateTime.UtcNow, hitInfo);
+			// Todo: Have some sort of InjuryFactory that takes over this logic?
+			var injuryDistance = Vector3.Distance(player.transform.position, hitInfo.Initiator.transform.position);
+			var majorityDamageType = hitInfo.damageTypes.GetMajorityDamageType();
+			var newInjury = new Injury(hitInfo.Initiator, majorityDamageType, injuryDistance, DateTime.UtcNow);
 			bool updated = false;
+
 			lock (this.State)
 			{
 				Injury prevInjury;
@@ -53,8 +59,8 @@
 					// If the previous injury and the new injury were both self-inflicted
 					// and have the same damage type, don't update it (very spammy).
 					// This is probably a micro optimization, but fuck it.
-					if (!(prevInjury.HitInfo.Initiator == player
-						&& newInjury.HitInfo.Initiator == player &&
+					if (!(prevInjury.CausedBy == player && 
+						newInjury.CausedBy == player && 
 						prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
 					{
 						this.State[player.userID] = newInjury;

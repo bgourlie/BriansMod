@@ -35,12 +35,12 @@
 					goto failed;
 				}
 
-				var killer = lastInjury.HitInfo.Initiator as BasePlayer;
+				var killer = lastInjury.CausedBy as BasePlayer;
 				if (killer != null)
 				{
 					if (!killer.Equals(victim))
 					{
-						pvpDeath = new PvpDeath(victim, killer, lastInjury.PrimaryDamageType);
+						pvpDeath = new PvpDeath(victim, killer, lastInjury);
 						return true;
 					}
 				}

@@ -66,11 +66,7 @@
 			PvpDeath pvpDeath;
 			if (this.pvpDeathResolver.TryResolve(entity, hitinfo, out pvpDeath))
 			{
-				this.chat.Broadcast(
-					"{0} killed {1} by way of {2}.",
-					pvpDeath.Killer.displayName,
-					pvpDeath.Victim.displayName,
-					pvpDeath.DeathCause);
+				this.chat.Broadcast(pvpDeath.ToString());
 				this.data.RecordDeath(pvpDeath);
 			}
 			else

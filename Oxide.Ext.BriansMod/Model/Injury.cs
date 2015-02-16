@@ -4,27 +4,33 @@
 
 	using global::Rust;
 
+	using UnityEngine;
+
 	public class Injury
 	{
+		public readonly MonoBehaviour CausedBy;
+
 		public readonly DateTime InjuryTime;
 
 		public readonly DamageType PrimaryDamageType;
 
-		public readonly HitInfo HitInfo;
+		public readonly float AttackDistance;
 
-		public Injury(DateTime injuryTime, HitInfo hitInfo)
+		public Injury(MonoBehaviour causedBy, DamageType primaryDamageType, float attackDistance, DateTime injuryTime)
 		{
+			this.CausedBy = causedBy;
 			this.InjuryTime = injuryTime;
-			this.HitInfo = hitInfo;
-			this.PrimaryDamageType = hitInfo.damageTypes.GetMajorityDamageType();
+			this.PrimaryDamageType = primaryDamageType;
+			this.AttackDistance = attackDistance;
 		}
 
 		public override string ToString()
 		{
 			return string.Format(
-				"{0} damage inflicted by {1}",
+				"{0} damage inflicted by {1} from a distance of {2}",
 				this.PrimaryDamageType,
-				this.HitInfo.Initiator.GetDisplayName());
+				this.CausedBy.GetDisplayName(),
+				this.AttackDistance);
 		}
 	}
 }

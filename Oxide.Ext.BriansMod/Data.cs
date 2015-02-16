@@ -78,7 +78,7 @@
 					"INSERT INTO pvpdeaths (victimSteamId, killerSteamId, cause, time) VALUES (@victimSteamId, @killerSteamId, @cause, @time)";
 				cmd.Parameters.AddWithValue("@victimSteamId", pvpDeath.Victim.userID);
 				cmd.Parameters.AddWithValue("@killerSteamId", pvpDeath.Killer.userID);
-				cmd.Parameters.AddWithValue("@cause", (int)pvpDeath.DeathCause);
+				cmd.Parameters.AddWithValue("@cause", (int)pvpDeath.Injury.PrimaryDamageType);
 				cmd.Parameters.AddWithValue("@time", DateTime.UtcNow.ToUnixEpoch());
 				cmd.ExecuteNonQuery();
 			}
