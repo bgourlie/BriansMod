@@ -66,8 +66,10 @@
   <ItemGroup>
     <Compile Include="Chat.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Console.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="IChat.cs" />
+    <Compile Include="IConsole.cs" />
     <Compile Include="IInjuryTracker.cs" />
     <Compile Include="InjuryTracker.cs" />
     <Compile Include="Model\Injury.cs" />

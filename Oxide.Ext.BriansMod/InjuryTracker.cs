@@ -68,7 +68,7 @@
 
 			if (updated)
 			{
-				this.logger.Debug("Updated injury for {0} to {1}", player.displayName, newInjury);
+				this.logger.Debug(Module, "Updated injury for {0} to {1}", player.displayName, newInjury);
 			}
 		}
 
