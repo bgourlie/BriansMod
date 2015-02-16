@@ -10,35 +10,43 @@
 
 		private readonly ILogger logger;
 
-		private readonly IPlayerResolver playerResolver;
+		private readonly IInjuryTracker injuryTracker;
 
 		public PvpDeathResolver()
-			: this(Logger.Instance, PlayerResolver.Instance)
+			: this(Logger.Instance, InjuryTracker.Instance)
 		{
 		}
 
-		public PvpDeathResolver(ILogger logger, IPlayerResolver playerResolver)
+		public PvpDeathResolver(ILogger logger, IInjuryTracker injuryTracker)
 		{
 			this.logger = logger;
-			this.playerResolver = playerResolver;
+			this.injuryTracker = injuryTracker;
 		}
 
 		public bool TryResolve(MonoBehaviour entity, HitInfo hitinfo, out PvpDeath pvpDeath)
 		{
-			BasePlayer victim;
-			if (this.playerResolver.TryResolvePlayer(entity, out victim))
+			var victim = entity as BasePlayer;
+			if (victim != null)
 			{
-				BasePlayer killer;
-				if (this.playerResolver.TryResolvePlayer(hitinfo.Initiator, out killer))
+				Injury lastInjury;
+				if (!this.injuryTracker.TryGetLastInjury(victim, out lastInjury))
+				{
+					this.logger.Warn(Module, "Unable to determine lastest injury.");
+					goto failed;
+				}
+
+				var killer = lastInjury.HitInfo.Initiator as BasePlayer;
+				if (killer != null)
 				{
 					if (!killer.Equals(victim))
 					{
-						pvpDeath = new PvpDeath(victim, killer, victim.lastDamage);
+						pvpDeath = new PvpDeath(victim, killer, lastInjury.HitInfo.damageTypes.GetMajorityDamageType());
 						return true;
 					}
 				}
 			}
 
+			failed:
 			pvpDeath = null;
 			return false;
 		}

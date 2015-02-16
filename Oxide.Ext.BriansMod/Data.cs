@@ -51,14 +51,14 @@
 			using (var cmd = this.conn.CreateCommand())
 			{
 				cmd.CommandText =
-					"CREATE TABLE IF NOT EXISTS pvpdeaths (victimSteamId INT NOT NULL, killerSteamid INT NOT NULL, cause INT NOT NULL)";
+					"CREATE TABLE IF NOT EXISTS pvpdeaths (victimSteamId INT NOT NULL, killerSteamid INT NOT NULL, cause INT NOT NULL, time INTEGER NOT NULL)";
 				cmd.ExecuteNonQuery();
 			}
 		}
 
 		public void RecordPlayer(BasePlayer player)
 		{
-			this.logger.Info(Module, "Recording player: {0}", player);
+			this.logger.Info(Module, "Recording player: {0}", player.displayName);
 			using (var cmd = this.conn.CreateCommand())
 			{
 				cmd.CommandText =
@@ -75,10 +75,11 @@
 			using (var cmd = this.conn.CreateCommand())
 			{
 				cmd.CommandText =
-					"INSERT INTO pvpdeaths (victimSteamId, killerSteamId, cause) VALUES (@victimSteamId, @killerSteamId, @cause)";
+					"INSERT INTO pvpdeaths (victimSteamId, killerSteamId, cause, time) VALUES (@victimSteamId, @killerSteamId, @cause, @time)";
 				cmd.Parameters.AddWithValue("@victimSteamId", pvpDeath.Victim.userID);
 				cmd.Parameters.AddWithValue("@killerSteamId", pvpDeath.Killer.userID);
 				cmd.Parameters.AddWithValue("@cause", (int)pvpDeath.DeathCause);
+				cmd.Parameters.AddWithValue("@time", DateTime.UtcNow.ToUnixEpoch());
 				cmd.ExecuteNonQuery();
 			}
 		}

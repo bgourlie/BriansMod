@@ -66,21 +66,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Chat.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="IChat.cs" />
+    <Compile Include="IInjuryTracker.cs" />
+    <Compile Include="InjuryTracker.cs" />
+    <Compile Include="Model\Injury.cs" />
     <Compile Include="PvpDeathResolver.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IData.cs" />
     <Compile Include="IPvpDeathResolver.cs" />
     <Compile Include="ILogger.cs" />
-    <Compile Include="IPlayerResolver.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Model\PvpDeath.cs" />
     <Compile Include="BriansModPlugin.cs" />
-    <Compile Include="PlayerResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BriansModPluginLoader.cs" />
     <Compile Include="BriansModExtension.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

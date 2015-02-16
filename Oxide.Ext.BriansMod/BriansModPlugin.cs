@@ -10,15 +10,17 @@
 	{
 		private const string Module = "Plugin";
 
+		private readonly IChat chat;
+
 		private readonly ILogger logger;
 
 		private readonly IPvpDeathResolver pvpDeathResolver;
 
-		private readonly IPlayerResolver playerResolver;
+		private readonly IInjuryTracker injuryTracker;
 
 		private readonly IData data;
 
-		public BriansModPlugin(ILogger logger, IData data, IPlayerResolver playerResolver)
+		public BriansModPlugin(ILogger logger, IData data, IChat chat, IInjuryTracker injuryTracker)
 		{
 			this.Name = "Brian's Mod";
 			this.Title = "Brian's Mod";
@@ -27,11 +29,12 @@
 			this.pvpDeathResolver = new PvpDeathResolver();
 			this.logger = logger;
 			this.data = data;
-			this.playerResolver = playerResolver;
+			this.injuryTracker = injuryTracker;
+			this.chat = chat;
 		}
 
 		public BriansModPlugin()
-			: this(Logger.Instance, Data.Instance, PlayerResolver.Instance)
+			: this(Logger.Instance, Data.Instance, Chat.Instance, InjuryTracker.Instance)
 		{
 		}
 
@@ -47,12 +50,27 @@
 			this.data.RecordPlayer(basePlayer);
 		}
 
+		[HookMethod("OnEntityAttacked")]
+		private void OnEntityAttacked(MonoBehaviour entity, HitInfo hitInfo)
+		{
+			var player = entity as BasePlayer;
+			if (player != null)
+			{
+				this.injuryTracker.UpdateInjuryStatus(player, hitInfo);
+			}
+		}
+
 		[HookMethod("OnEntityDeath")]
 		private void OnEntityDeath(MonoBehaviour entity, HitInfo hitinfo)
 		{
 			PvpDeath pvpDeath;
 			if (this.pvpDeathResolver.TryResolve(entity, hitinfo, out pvpDeath))
 			{
+				this.chat.Broadcast(
+					"{0} killed {1} by way of {2}.",
+					pvpDeath.Killer.displayName,
+					pvpDeath.Victim.displayName,
+					pvpDeath.DeathCause);
 				this.data.RecordDeath(pvpDeath);
 			}
 			else
