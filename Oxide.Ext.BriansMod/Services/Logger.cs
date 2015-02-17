@@ -1,7 +1,7 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
-	using Core;
-	using Core.Logging;
+	using Oxide.Core;
+	using Oxide.Core.Logging;
 
 	public class Logger : ILogger
 	{

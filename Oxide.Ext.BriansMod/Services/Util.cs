@@ -1,8 +1,8 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System;
 
-	using UnityEngine;
+	using Oxide.Ext.BriansMod.Model;
 
 	internal static class Util
 	{
@@ -24,15 +24,15 @@
 			return (int)t.TotalSeconds;
 		}
 
-		public static string GetDisplayName(this MonoBehaviour entity)
+		public static string GetDisplayName(this IMonoBehavior entity)
 		{
-			if (entity is BasePlayer)
+			if (entity is IBasePlayer)
 			{
-				return ((BasePlayer)entity).displayName;
+				return ((IBasePlayer)entity).DisplayName;
 			}
-			if (entity is AttackEntity)
+			if (entity is IAttackEntity)
 			{
-				return ((AttackEntity)entity).holdType.ToString();
+				return ((IAttackEntity)entity).HoldType.ToString();
 			}
 			return entity.ToString();
 		}

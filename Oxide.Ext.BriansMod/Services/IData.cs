@@ -1,11 +1,11 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System.Data.SQLite;
 
 	public interface IData
 	{
-		void InitializeStore();
-
 		SQLiteConnection Connection { get; }
+
+		void InitializeStore();
 	}
 }

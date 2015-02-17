@@ -2,7 +2,7 @@
 {
 	using System.Collections.Generic;
 
-	using Core.Plugins;
+	using Oxide.Core.Plugins;
 
 	public class BriansModPluginLoader : PluginLoader
 	{
@@ -11,7 +11,7 @@
 			switch (name)
 			{
 				case "briansmod":
-					return new BriansModPlugin();
+					return new BriansModPluginGlue();
 				default:
 					return null;
 			}

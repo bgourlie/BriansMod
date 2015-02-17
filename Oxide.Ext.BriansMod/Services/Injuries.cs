@@ -1,11 +1,11 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System;
 	using System.Collections.Generic;
 
 	using global::Rust;
 
-	using Model;
+	using Oxide.Ext.BriansMod.Model;
 
 	using UnityEngine;
 
@@ -15,11 +15,9 @@
 
 		private static Injuries instance;
 
-		public static Injuries Instance => instance ?? (instance = new Injuries());
+		private readonly ILogger logger;
 
 		public readonly Dictionary<ulong, Injury> State = new Dictionary<ulong, Injury>();
-
-		private readonly ILogger logger;
 
 		public Injuries()
 			: this(Logger.Instance)
@@ -31,13 +29,15 @@
 			this.logger = logger;
 		}
 
-		public void UpdateInjuryStatus(HitInfo hitInfo)
+		public static Injuries Instance => instance ?? (instance = new Injuries());
+
+		public void UpdateInjuryStatus(IHitInfo hitInfo)
 		{
-			var player = hitInfo.HitEntity as BasePlayer;
+			var player = hitInfo.HitEntity as IBasePlayer;
 
 			if (player == null
 			    || (player.IsDead()
-			        || (player == hitInfo.Initiator && hitInfo.damageTypes.GetMajorityDamageType() == DamageType.Bleeding)))
+			        || (player == hitInfo.Initiator && hitInfo.DamageTypes.GetMajorityDamageType() == DamageType.Bleeding)))
 			{
 				// Don't update anything if
 				//   - Not a player
@@ -47,11 +47,11 @@
 			}
 
 			var newInjury = this.ResolveInjury(hitInfo);
-			bool updated = false;
+			var updated = false;
 			Injury prevInjury;
-			if (!this.State.TryGetValue(player.userID, out prevInjury))
+			if (!this.State.TryGetValue(player.UserId, out prevInjury))
 			{
-				this.State.Add(player.userID, newInjury);
+				this.State.Add(player.UserId, newInjury);
 				updated = true;
 			}
 			else
@@ -63,29 +63,29 @@
 					!(prevInjury.CausedBy == player && newInjury.CausedBy == player
 					  && prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
 				{
-					this.State[player.userID] = newInjury;
+					this.State[player.UserId] = newInjury;
 					updated = true;
 				}
 			}
 
 			if (updated)
 			{
-				this.logger.Debug(Module, "Updated injury for {0} to {1}", player.displayName, newInjury);
+				this.logger.Debug(Module, "Updated injury for {0} to {1}", player.DisplayName, newInjury);
 			}
 		}
 
-		public bool TryGetLastRelevantInjury(BasePlayer player, out Injury injury)
+		public bool TryGetLastRelevantInjury(IBasePlayer player, out Injury injury)
 		{
-			return this.State.TryGetValue(player.userID, out injury);
+			return this.State.TryGetValue(player.UserId, out injury);
 		}
 
-		public Injury ResolveInjury(HitInfo hitInfo)
+		public Injury ResolveInjury(IHitInfo hitInfo)
 		{
 			// hitInfo.HitEntity can be null (in case of BearTrap injury I've noticed so far)
 			var injuryDistance = hitInfo.HitEntity != null
-				                     ? Vector3.Distance(hitInfo.HitEntity.transform.position, hitInfo.Initiator.transform.position)
+				                     ? Vector3.Distance(hitInfo.HitEntity.Transform.position, hitInfo.Initiator.Transform.position)
 				                     : 0f;
-			var majorityDamageType = hitInfo.damageTypes.GetMajorityDamageType();
+			var majorityDamageType = hitInfo.DamageTypes.GetMajorityDamageType();
 			return new Injury(hitInfo.Initiator, hitInfo.Weapon, majorityDamageType, injuryDistance, DateTime.UtcNow);
 		}
 	}

@@ -1,6 +1,8 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System;
+
+	using Oxide.Ext.BriansMod.Model;
 
 	public class Traps : ITraps
 	{
@@ -26,20 +28,20 @@
 			this.data = data;
 		}
 
-		public void RecordTrap(BasePlayer player, BearTrap trap)
+		public void RecordTrap(IBasePlayer player, ITrap trap)
 		{
 			using (var cmd = this.data.Connection.CreateCommand())
 			{
 				var trapId = this.GetTrapId(trap);
-				this.logger.Info(Module, "Saving bear trap (id = {0}, owner = {1})", trapId, player.userID);
+				this.logger.Info(Module, "Saving bear trap (id = {0}, owner = {1})", trapId, player.UserId);
 				cmd.CommandText = "INSERT INTO traps (id, ownerid) VALUES (@id, @ownerid);";
 				cmd.Parameters.AddWithValue("@id", trapId);
-				cmd.Parameters.AddWithValue("@ownerid", player.userID);
+				cmd.Parameters.AddWithValue("@ownerid", player.UserId);
 				cmd.ExecuteNonQuery();
 			}
 		}
 
-		public void DeleteTrap(BearTrap trap)
+		public void DeleteTrap(ITrap trap)
 		{
 			using (var cmd = this.data.Connection.CreateCommand())
 			{
@@ -51,7 +53,7 @@
 			}
 		}
 
-		public ulong GetOwnerId(BearTrap trap)
+		public ulong GetOwnerId(ITrap trap)
 		{
 			using (var cmd = this.data.Connection.CreateCommand())
 			{
@@ -69,10 +71,10 @@
 		}
 
 		// Generate a reasonably unique id based on the trap's x and y coords
-		private ulong GetTrapId(BearTrap trap)
+		private ulong GetTrapId(ITrap trap)
 		{
-			var leftBytes = BitConverter.GetBytes(trap.transform.position.x);
-			var rightBytes = BitConverter.GetBytes(trap.transform.position.y);
+			var leftBytes = BitConverter.GetBytes(trap.Transform.position.x);
+			var rightBytes = BitConverter.GetBytes(trap.Transform.position.y);
 			var idBytes = new byte[8];
 			Array.Copy(leftBytes, idBytes, 4);
 			Array.Copy(rightBytes, 0, idBytes, 4, 4);

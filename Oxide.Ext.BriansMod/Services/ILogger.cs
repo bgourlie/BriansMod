@@ -1,4 +1,4 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	public interface ILogger
 	{

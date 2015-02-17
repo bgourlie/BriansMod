@@ -4,23 +4,23 @@
 
 	using global::Rust;
 
-	using UnityEngine;
+	using Oxide.Ext.BriansMod.Services;
 
 	public class Injury
 	{
-		public readonly MonoBehaviour CausedBy;
+		public readonly float AttackDistance;
+
+		public readonly IMonoBehavior CausedBy;
 
 		public readonly DateTime InjuryTime;
 
 		public readonly DamageType PrimaryDamageType;
 
-		public readonly float AttackDistance;
-
-		public readonly AttackEntity Weapon;
+		public readonly IAttackEntity Weapon;
 
 		public Injury(
-			MonoBehaviour causedBy,
-			AttackEntity weapon,
+			IMonoBehavior causedBy,
+			IAttackEntity weapon,
 			DamageType primaryDamageType,
 			float attackDistance,
 			DateTime injuryTime)

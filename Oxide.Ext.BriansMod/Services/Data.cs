@@ -1,4 +1,4 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System;
 	using System.Data.SQLite;
@@ -10,15 +10,11 @@
 
 		private static Data instance;
 
+		private static SQLiteConnection conn;
+
 		private readonly IConfiguration config;
 
 		private readonly ILogger logger;
-
-		private static SQLiteConnection conn;
-
-		public SQLiteConnection Connection => conn;
-
-		public static Data Instance => instance ?? (instance = new Data());
 
 		public Data()
 			: this(Logger.Instance, Configuration.Instance)
@@ -30,6 +26,10 @@
 			this.config = config;
 			this.logger = logger;
 		}
+
+		public static Data Instance => instance ?? (instance = new Data());
+
+		public SQLiteConnection Connection => conn;
 
 		public void InitializeStore()
 		{

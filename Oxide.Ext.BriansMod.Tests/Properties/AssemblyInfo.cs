@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("OxideTest")]
+[assembly: AssemblyTitle("Oxide.Ext.BriansMod.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("OxideTest")]
+[assembly: AssemblyProduct("Oxide.Ext.BriansMod.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("89f02c4c-1b90-4484-850b-32d33a2c4b30")]
+[assembly: Guid("03cd2979-275e-4001-a412-27eb3baef308")]
 
 // Version information for an assembly consists of the following four values:
 //

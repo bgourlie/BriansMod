@@ -1,7 +1,7 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
-	using Core;
-	using Core.Extensions;
+	using Oxide.Core;
+	using Oxide.Core.Extensions;
 
 	public class BriansModExtension : Extension
 	{

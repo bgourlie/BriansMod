@@ -1,8 +1,6 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using Network;
-
-	using UnityEngine;
 
 	public interface IConsole
 	{

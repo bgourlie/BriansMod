@@ -1,44 +1,44 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System;
-	using System.Linq;
 
-	using Model;
-
-	using UnityEngine;
+	using Oxide.Ext.BriansMod.Model;
 
 	public class Deaths : IDeaths
 	{
-		private static Deaths _instance;
-
 		private const string Module = "Deaths";
 
-		private readonly ILogger logger;
+		private static Deaths _instance;
 
 		private readonly IData data;
 
-		private readonly ITraps traps;
-
 		private readonly IInjuries injuries;
 
-		public static Deaths Instance => _instance ?? (_instance = new Deaths());
+		private readonly ILogger logger;
+
+		private readonly IPlayers players;
+
+		private readonly ITraps traps;
 
 		public Deaths()
-			: this(Logger.Instance, Injuries.Instance, Data.Instance, Traps.Instance)
+			: this(Logger.Instance, Players.Instance, Injuries.Instance, Data.Instance, Traps.Instance)
 		{
 		}
 
-		public Deaths(ILogger logger, IInjuries injuries, IData data, ITraps traps)
+		public Deaths(ILogger logger, IPlayers players, IInjuries injuries, IData data, ITraps traps)
 		{
 			this.logger = logger;
+			this.players = players;
 			this.injuries = injuries;
 			this.data = data;
 			this.traps = traps;
 		}
 
-		public bool TryResolvePvpDeath(MonoBehaviour entity, HitInfo hitInfo, out PvpDeath pvpDeath)
+		public static Deaths Instance => _instance ?? (_instance = new Deaths());
+
+		public bool TryResolvePvpDeath(IMonoBehavior entity, IHitInfo hitInfo, out PvpDeath pvpDeath)
 		{
-			var victim = entity as BasePlayer;
+			var victim = entity as IBasePlayer;
 			if (victim != null)
 			{
 				Injury lastInjury;
@@ -47,18 +47,15 @@
 					lastInjury = this.injuries.ResolveInjury(hitInfo);
 				}
 
-				BasePlayer killer = null;
-				if (lastInjury.CausedBy is BasePlayer)
+				IBasePlayer killer = null;
+				if (lastInjury.CausedBy is IBasePlayer)
 				{
-					killer = (BasePlayer)lastInjury.CausedBy;
+					killer = (IBasePlayer)lastInjury.CausedBy;
 				}
-				else if (lastInjury.CausedBy is BearTrap)
+				else if (lastInjury.CausedBy is ITrap)
 				{
-					this.logger.Info(Module, "");
-					var ownerId = this.traps.GetOwnerId((BearTrap)lastInjury.CausedBy);
-					killer = BasePlayer.activePlayerList.FirstOrDefault(p => p.userID == ownerId)
-					         ?? BasePlayer.sleepingPlayerList.FirstOrDefault(p => p.userID == ownerId);
-
+					var ownerId = this.traps.GetOwnerId((ITrap)lastInjury.CausedBy);
+					this.players.TryFindPlayerById(ownerId, out killer);
 					// TODO: add kill to trap
 				}
 
@@ -72,7 +69,6 @@
 				}
 			}
 
-			failed:
 			pvpDeath = null;
 			return false;
 		}
@@ -84,8 +80,8 @@
 			{
 				cmd.CommandText =
 					"INSERT INTO pvpdeaths (victimid, killerid, cause, time) VALUES (@victimid, @killerid, @cause, @time)";
-				cmd.Parameters.AddWithValue("@victimid", pvpDeath.Victim.userID);
-				cmd.Parameters.AddWithValue("@killerid", pvpDeath.Killer.userID);
+				cmd.Parameters.AddWithValue("@victimid", pvpDeath.Victim.UserId);
+				cmd.Parameters.AddWithValue("@killerid", pvpDeath.Killer.UserId);
 				cmd.Parameters.AddWithValue("@cause", (int)pvpDeath.Injury.PrimaryDamageType);
 				cmd.Parameters.AddWithValue("@time", DateTime.UtcNow.ToUnixEpoch());
 				cmd.ExecuteNonQuery();

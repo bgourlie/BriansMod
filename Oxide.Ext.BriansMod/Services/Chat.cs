@@ -1,10 +1,16 @@
-﻿namespace Oxide.Ext.BriansMod
+﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using Network;
+
+	using Oxide.Core;
+	using Oxide.Core.Plugins;
+	using Oxide.Rust.Libraries;
 
 	public class Chat : IChat
 	{
 		private static Chat instance;
+
+		private static readonly Command Command = Interface.GetMod().GetLibrary<Command>("Command");
 
 		public static Chat Instance => instance ?? (instance = new Chat());
 
@@ -21,6 +27,11 @@
 		public void Broadcast(string message, params object[] args)
 		{
 			ConsoleSystem.Broadcast("chat.add", "Brian's Mod", string.Format(message, args));
+		}
+
+		public void AddCommand(string name, Plugin plugin, string callbackName)
+		{
+			Command.AddChatCommand(name, plugin, callbackName);
 		}
 	}
 }
