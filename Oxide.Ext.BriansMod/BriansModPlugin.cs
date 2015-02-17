@@ -24,28 +24,31 @@
 
 		private readonly ILogger logger;
 
-		private readonly IDeathResolver deathResolver;
+		private readonly IDeaths deaths;
 
-		private readonly IInjuryTracker injuryTracker;
+		private readonly IInjuries injuries;
 
 		private readonly IData data;
 
-		public BriansModPlugin(ILogger logger, IData data, IChat chat, IConsole console, IInjuryTracker injuryTracker)
+		private readonly ITraps traps;
+
+		public BriansModPlugin(ILogger logger, IData data, IChat chat, IConsole console, IInjuries injuries, ITraps traps)
 		{
-			this.Name = "Brian's Mod";
+			this.Name = "bmod";
 			this.Title = "Brian's Mod";
 			this.Author = "W. Brian Gourlie";
 			this.HasConfig = false;
-			this.deathResolver = new DeathResolver();
+			this.deaths = new Deaths();
 			this.logger = logger;
 			this.console = console;
 			this.data = data;
-			this.injuryTracker = injuryTracker;
+			this.injuries = injuries;
 			this.chat = chat;
+			this.traps = traps;
 		}
 
 		public BriansModPlugin()
-			: this(Logger.Instance, Data.Instance, Chat.Instance, Console.Instance, InjuryTracker.Instance)
+			: this(Logger.Instance, Data.Instance, Chat.Instance, Console.Instance, Injuries.Instance, Traps.Instance)
 		{
 		}
 
@@ -60,7 +63,7 @@
 			var cmd = Interface.GetMod().GetLibrary<Command>("Command");
 			cmd.AddChatCommand("tp", this, "OnTp");
 			cmd.AddChatCommand("arm", this, "OnArm");
-			cmd.AddChatCommand("listitems", this, "OnListItems");
+			// cmd.AddConsoleCommand("listitems", this, "OnListItems");
 #endif
 		}
 
@@ -102,21 +105,24 @@
 			player.inventory.GiveItem(11964, 10000); // stones
 		}
 
-		[HookMethod("OnListItems")]
-		private void OnListItems(BasePlayer player, string command, string[] args)
-		{
-			var itemsDefinition = ItemManager.GetItemDefinitions();
-			foreach (var item in itemsDefinition)
-			{
-				this.console.Send(player, "{0}: {1}", item.displayname, item.itemid);
-			}
-		}
+		//[HookMethod("OnListItems")]
+		//private void OnListItems(ConsoleSystem.Arg arg)
+		//{
+		//	var itemsDefinition = ItemManager.GetItemDefinitions();
+		//	foreach (var item in itemsDefinition)
+		//	{
+		//		this.console.Send(arg.connection, "{0}: {1}", item.displayname, item.itemid);
+		//	}
+		//}
 #endif
 
-		[HookMethod("OnPlayerSpawn")]
-		private void OnPlayerSpawn(BasePlayer basePlayer)
+		[HookMethod("OnItemDeployed")]
+		private void OnItemDeployed(Deployer deployer, BaseEntity deployedEntity)
 		{
-			this.data.RecordPlayer(basePlayer);
+			if (deployedEntity is BearTrap)
+			{
+				this.traps.RecordTrap(deployer.ownerPlayer, (BearTrap)deployedEntity);
+			}
 		}
 
 		[HookMethod("OnEntityAttacked")]
@@ -125,7 +131,7 @@
 			var player = entity as BasePlayer;
 			if (player != null)
 			{
-				this.injuryTracker.UpdateInjuryStatus(player, hitInfo);
+				this.injuries.UpdateInjuryStatus(hitInfo);
 			}
 		}
 
@@ -133,16 +139,19 @@
 		private void OnEntityDeath(MonoBehaviour entity, HitInfo hitinfo)
 		{
 			PvpDeath pvpDeath;
-			if (this.deathResolver.TryResolvePvpDeath(entity, hitinfo, out pvpDeath))
+			if (this.deaths.TryResolvePvpDeath(entity, hitinfo, out pvpDeath))
 			{
 				this.chat.Broadcast(pvpDeath.ToString());
-				this.data.RecordDeath(pvpDeath);
+				this.deaths.Record(pvpDeath);
+			}
+			else if (entity is BearTrap)
+			{
+				this.traps.DeleteTrap((BearTrap)entity);
 			}
 			else
 			{
 				this.logger.Info(Module, "Ignoring non-pvp death.");
 			}
 		}
-
 	}
 }

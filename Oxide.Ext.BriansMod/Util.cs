@@ -30,6 +30,10 @@
 			{
 				return ((BasePlayer)entity).displayName;
 			}
+			if (entity is AttackEntity)
+			{
+				return ((AttackEntity)entity).holdType.ToString();
+			}
 			return entity.ToString();
 		}
 	}

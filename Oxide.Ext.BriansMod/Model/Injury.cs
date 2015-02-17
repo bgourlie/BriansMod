@@ -16,9 +16,17 @@
 
 		public readonly float AttackDistance;
 
-		public Injury(MonoBehaviour causedBy, DamageType primaryDamageType, float attackDistance, DateTime injuryTime)
+		public readonly AttackEntity Weapon;
+
+		public Injury(
+			MonoBehaviour causedBy,
+			AttackEntity weapon,
+			DamageType primaryDamageType,
+			float attackDistance,
+			DateTime injuryTime)
 		{
 			this.CausedBy = causedBy;
+			this.Weapon = weapon;
 			this.InjuryTime = injuryTime;
 			this.PrimaryDamageType = primaryDamageType;
 			this.AttackDistance = attackDistance;
@@ -29,7 +37,7 @@
 			return string.Format(
 				"{0} damage inflicted by {1} from a distance of {2}",
 				this.PrimaryDamageType,
-				this.CausedBy.GetDisplayName(),
+				this.Weapon?.GetDisplayName() ?? this.CausedBy.GetDisplayName(),
 				this.AttackDistance);
 		}
 	}

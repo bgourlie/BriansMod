@@ -1,13 +1,11 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
-	using Model;
+	using System.Data.SQLite;
 
 	public interface IData
 	{
 		void InitializeStore();
 
-		void RecordPlayer(BasePlayer player);
-
-		void RecordDeath(PvpDeath pvpDeath);
+		SQLiteConnection Connection { get; }
 	}
 }

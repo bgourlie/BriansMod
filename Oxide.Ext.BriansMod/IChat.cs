@@ -5,7 +5,7 @@
 	public interface IChat
 	{
 		void Send(Connection conn, string message, params object[] args);
-		
+
 		void Send(BasePlayer player, string message, params object[] args);
 
 		void Broadcast(string message, params object[] args);

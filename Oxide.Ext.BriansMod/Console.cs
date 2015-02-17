@@ -1,6 +1,8 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
-	class Console : IConsole
+	using Network;
+
+	public class Console : IConsole
 	{
 		// ReSharper disable once InconsistentNaming
 		private static Console _instance;
@@ -9,7 +11,12 @@
 
 		public void Send(BasePlayer player, string message, params object[] args)
 		{
-			player.SendConsoleCommand("echo " + string.Format(message, args));
+			player?.SendConsoleCommand("echo " + string.Format(message, args));
+		}
+
+		public void Send(Connection conn, string message, params object[] args)
+		{
+			this.Send(conn.player as BasePlayer, message, args);
 		}
 	}
 }
