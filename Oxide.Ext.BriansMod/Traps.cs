@@ -6,6 +6,7 @@
 	{
 		private const string Module = "Traps";
 
+		// ReSharper disable once InconsistentNaming
 		private static Traps _instance;
 
 		public static Traps Instance => _instance ?? (_instance = new Traps());
@@ -67,7 +68,7 @@
 			}
 		}
 
-		// Generate a reasonably unique id based on the traps x and y coords
+		// Generate a reasonably unique id based on the trap's x and y coords
 		private ulong GetTrapId(BearTrap trap)
 		{
 			var leftBytes = BitConverter.GetBytes(trap.transform.position.x);
