@@ -9,6 +9,8 @@
 
 	public class Deaths : IDeaths
 	{
+		private static Deaths _instance;
+
 		private const string Module = "Deaths";
 
 		private readonly ILogger logger;
@@ -18,6 +20,8 @@
 		private readonly ITraps traps;
 
 		private readonly IInjuries injuries;
+
+		public static Deaths Instance => _instance ?? (_instance = new Deaths());
 
 		public Deaths()
 			: this(Logger.Instance, Injuries.Instance, Data.Instance, Traps.Instance)

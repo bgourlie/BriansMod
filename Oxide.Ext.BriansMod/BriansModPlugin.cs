@@ -32,13 +32,13 @@
 
 		private readonly ITraps traps;
 
-		public BriansModPlugin(ILogger logger, IData data, IChat chat, IConsole console, IInjuries injuries, ITraps traps)
+		public BriansModPlugin(ILogger logger, IData data, IChat chat, IConsole console, IDeaths deaths, IInjuries injuries, ITraps traps)
 		{
 			this.Name = "bmod";
 			this.Title = "Brian's Mod";
 			this.Author = "W. Brian Gourlie";
 			this.HasConfig = false;
-			this.deaths = new Deaths();
+			this.deaths = deaths;
 			this.logger = logger;
 			this.console = console;
 			this.data = data;
@@ -48,7 +48,7 @@
 		}
 
 		public BriansModPlugin()
-			: this(Logger.Instance, Data.Instance, Chat.Instance, Console.Instance, Injuries.Instance, Traps.Instance)
+			: this(Logger.Instance, Data.Instance, Chat.Instance, Console.Instance, Deaths.Instance, Injuries.Instance, Traps.Instance)
 		{
 		}
 
