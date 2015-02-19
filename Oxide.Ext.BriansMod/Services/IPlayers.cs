@@ -1,6 +1,6 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
-	using Oxide.Ext.BriansMod.Model;
+	using Model;
 
 	public interface IPlayers
 	{

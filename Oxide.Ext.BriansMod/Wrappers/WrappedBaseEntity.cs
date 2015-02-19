@@ -1,23 +1,22 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
-	using Oxide.Ext.BriansMod.Model;
-
+	using Model;
 	using UnityEngine;
 
 	public class WrappedBaseEntity : WrappedMonoBehavior, IBaseEntity
 	{
-		private readonly BaseEntity baseEntity;
+		private readonly BaseEntity _baseEntity;
 
 		public WrappedBaseEntity(BaseEntity baseEntity)
 		{
-			this.baseEntity = baseEntity;
+			_baseEntity = baseEntity;
 		}
 
-		public Transform Transform => this.baseEntity.transform;
+		public Transform Transform => _baseEntity.transform;
 
 		public override string ToString()
 		{
-			return this.baseEntity.ToString();
+			return _baseEntity.ToString();
 		}
 	}
 }

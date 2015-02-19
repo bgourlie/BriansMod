@@ -2,26 +2,18 @@
 {
 	using System;
 	using System.Collections.Generic;
-
 	using global::Rust;
-
-	using Oxide.Ext.BriansMod.Model;
-
+	using Model;
 	using UnityEngine;
 
 	public class Injuries : IInjuries
 	{
 		private const string Module = "Injuries";
-
-		private static Injuries instance;
-
-		private readonly ILogger logger;
-
-		private readonly IPlayers players;
-
+		private static Injuries _instance;
+		private readonly ILogger _logger;
+		private readonly IPlayers _players;
+		private readonly ITraps _traps;
 		public readonly Dictionary<ulong, Injury> State = new Dictionary<ulong, Injury>();
-
-		private readonly ITraps traps;
 
 		public Injuries()
 			: this(Logger.Instance, Traps.Instance, Players.Instance)
@@ -30,12 +22,12 @@
 
 		public Injuries(ILogger logger, ITraps traps, IPlayers players)
 		{
-			this.logger = logger;
-			this.traps = traps;
-			this.players = players;
+			_logger = logger;
+			_traps = traps;
+			_players = players;
 		}
 
-		public static Injuries Instance => instance ?? (instance = new Injuries());
+		public static Injuries Instance => _instance ?? (_instance = new Injuries());
 
 		public void UpdateInjuryStatus(IHitInfo hitInfo)
 		{
@@ -52,12 +44,12 @@
 				return;
 			}
 
-			var newInjury = this.ResolveInjury(hitInfo);
+			var newInjury = ResolveInjury(hitInfo);
 			var updated = false;
 			Injury prevInjury;
-			if (!this.State.TryGetValue(player.UserId, out prevInjury))
+			if (!State.TryGetValue(player.UserId, out prevInjury))
 			{
-				this.State.Add(player.UserId, newInjury);
+				State.Add(player.UserId, newInjury);
 				updated = true;
 			}
 			else
@@ -69,45 +61,46 @@
 					!(prevInjury.Attacker == player && newInjury.Attacker == player
 					  && prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
 				{
-					this.State[player.UserId] = newInjury;
+					State[player.UserId] = newInjury;
 					updated = true;
 				}
 			}
 
 			if (updated)
 			{
-				this.logger.Debug(Module, "Updated injury for {0} to {1}", player.DisplayName, newInjury);
+				_logger.Debug(Module, "Updated injury for {0} to {1}", player.DisplayName, newInjury);
 			}
 		}
 
 		public bool TryGetLastRelevantInjury(IBasePlayer player, out Injury injury)
 		{
-			return this.State.TryGetValue(player.UserId, out injury);
+			return State.TryGetValue(player.UserId, out injury);
 		}
 
 		public Injury ResolveInjury(IHitInfo hitInfo)
 		{
 			IMonoBehavior killer;
 			float injuryDistance;
-			bool causedByTrap;
+			ulong? causedByTrap;
 
 			// If it's a trap, we attribute the injury to the trap's owner.
-			if (hitInfo.Initiator is ITrap)
+			var trap = hitInfo.Initiator as ITrap;
+			if (trap != null)
 			{
-				var ownerId = this.traps.GetOwnerId((ITrap)hitInfo.Initiator);
+				causedByTrap = _traps.GetTrapId(trap);
+				ulong ownerId = _traps.GetOwnerId(trap);
 				IBasePlayer player;
-				if (!this.players.TryFindPlayerById(ownerId, out player))
+				if (!_players.TryFindPlayerById(ownerId, out player))
 				{
-					this.logger.Error(Module, "Unable to find player in ResolveInjury.");
+					_logger.Error(Module, "Unable to find player in ResolveInjury.");
 				}
 				injuryDistance = 0;
 				killer = player;
-				causedByTrap = true;
 			}
 			else
 			{
 				killer = hitInfo.Initiator;
-				causedByTrap = false;
+				causedByTrap = null;
 				injuryDistance = Vector3.Distance(hitInfo.HitEntity.Transform.position, hitInfo.Initiator.Transform.position);
 			}
 

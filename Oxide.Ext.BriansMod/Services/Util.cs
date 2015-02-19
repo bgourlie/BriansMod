@@ -19,7 +19,7 @@
 			}
 
 			var t = datetime - Epoch;
-			return (int)t.TotalSeconds;
+			return (int) t.TotalSeconds;
 		}
 	}
 }

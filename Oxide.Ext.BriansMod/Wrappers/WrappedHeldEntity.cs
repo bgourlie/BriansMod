@@ -1,24 +1,23 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
-	using Oxide.Ext.BriansMod.Model;
+	using Model;
 
 	public class WrappedHeldEntity : WrappedBaseEntity, IHeldEntity
 	{
-		private readonly HeldEntity heldEntity;
+		private readonly HeldEntity _heldEntity;
 
 		public WrappedHeldEntity(HeldEntity heldEntity)
 			: base(heldEntity)
 		{
-			this.heldEntity = heldEntity;
+			_heldEntity = heldEntity;
 		}
 
-		public HoldType HoldType => this.heldEntity.holdType;
-
-		public IBasePlayer OwnerPlayer => new WrappedBasePlayer(this.heldEntity.ownerPlayer);
+		public HoldType HoldType => _heldEntity.holdType;
+		public IBasePlayer OwnerPlayer => new WrappedBasePlayer(_heldEntity.ownerPlayer);
 
 		public override string ToString()
 		{
-			return this.heldEntity.ToString();
+			return _heldEntity.ToString();
 		}
 	}
 }

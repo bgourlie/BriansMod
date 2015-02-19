@@ -3,11 +3,8 @@
 namespace Oxide.Ext.BriansMod.Tests
 {
 	using System;
-
 	using Moq;
-
-	using Oxide.Ext.BriansMod.Services;
-
+	using Services;
 	using Xunit;
 
 	public class DataTests
@@ -17,7 +14,7 @@ namespace Oxide.Ext.BriansMod.Tests
 		{
 			var factory = new Factory();
 			var data = factory.GetDataService();
-			data.SaveDeath(1, 1, DateTime.UtcNow);
+			data.SaveDeath(1, 1, null, 1, 1f, DateTime.UtcNow);
 		}
 
 		[Fact]
@@ -34,12 +31,12 @@ namespace Oxide.Ext.BriansMod.Tests
 
 			public Factory()
 			{
-				this.LoggerMock = new Mock<ILogger>();
+				LoggerMock = new Mock<ILogger>();
 			}
 
 			public Data GetDataService()
 			{
-				var data = new Data(this.LoggerMock.Object);
+				var data = new Data(LoggerMock.Object);
 				data.InitializeStore("Data Source=:memory:;Version=3;");
 				return data;
 			}

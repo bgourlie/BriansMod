@@ -2,20 +2,15 @@
 {
 	using System;
 	using System.Text;
-
-	using Oxide.Ext.BriansMod.Model;
+	using Model;
 
 	public class Deaths : IDeaths
 	{
 		private const string Module = "Deaths";
-
-		private static Deaths instance;
-
-		private readonly IData data;
-
-		private readonly IInjuries injuries;
-
-		private readonly ILogger logger;
+		private static Deaths _instance;
+		private readonly IData _data;
+		private readonly IInjuries _injuries;
+		private readonly ILogger _logger;
 
 		public Deaths()
 			: this(Logger.Instance, Injuries.Instance, Data.Instance)
@@ -24,12 +19,12 @@
 
 		public Deaths(ILogger logger, IInjuries injuries, IData data)
 		{
-			this.logger = logger;
-			this.injuries = injuries;
-			this.data = data;
+			_logger = logger;
+			_injuries = injuries;
+			_data = data;
 		}
 
-		public static Deaths Instance => instance ?? (instance = new Deaths());
+		public static Deaths Instance => _instance ?? (_instance = new Deaths());
 
 		public bool TryResolvePvpDeath(IMonoBehavior entity, IHitInfo hitInfo, out PvpDeath pvpDeath)
 		{
@@ -37,14 +32,15 @@
 			if (victim != null)
 			{
 				Injury lastInjury;
-				if (!this.injuries.TryGetLastRelevantInjury(victim, out lastInjury))
+				if (!_injuries.TryGetLastRelevantInjury(victim, out lastInjury))
 				{
-					lastInjury = this.injuries.ResolveInjury(hitInfo);
+					lastInjury = _injuries.ResolveInjury(hitInfo);
 				}
 
-				if (lastInjury.Attacker is IBasePlayer)
+				var player = lastInjury.Attacker as IBasePlayer;
+				if (player != null)
 				{
-					var killer = (IBasePlayer)lastInjury.Attacker;
+					var killer = player;
 					if (!killer.Equals(victim))
 					{
 						pvpDeath = new PvpDeath(victim, killer, lastInjury);
@@ -59,15 +55,16 @@
 
 		public void Record(PvpDeath pvpDeath)
 		{
-			this.logger.Info(Module, "Recording death: {0}", pvpDeath);
-			this.data.SaveDeath(pvpDeath.Victim.UserId, pvpDeath.Killer.UserId, DateTime.UtcNow);
+			_logger.Info(Module, "Recording death: {0}", pvpDeath);
+			_data.SaveDeath(pvpDeath.Victim.UserId, pvpDeath.Killer.UserId, pvpDeath.Injury.Weapon?.HoldType.ToString(),
+				pvpDeath.Injury.TrapId, pvpDeath.Injury.AttackDistance, DateTime.UtcNow);
 		}
 
 		public string GetDeathMessage(PvpDeath death)
 		{
 			var sb = new StringBuilder(
 				string.Format("{0} was killed by {1}", death.Victim.DisplayName, death.Killer.DisplayName));
-			if (death.Injury.CausedByTrap)
+			if (death.Injury.TrapId.HasValue)
 			{
 				sb.Append("'s trap.");
 			}

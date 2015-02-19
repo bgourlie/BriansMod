@@ -1,16 +1,16 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
-	using Oxide.Core;
-	using Oxide.Core.Logging;
+	using Core;
+	using Core.Logging;
 
 	public class Logger : ILogger
 	{
 		// ReSharper disable once InconsistentNaming
 		private static readonly Core.Logging.Logger _Logger = Interface.GetMod().RootLogger;
 
-		private static Logger instance;
+		private static Logger _instance;
 
-		public static Logger Instance => instance ?? (instance = new Logger());
+		public static Logger Instance => _instance ?? (_instance = new Logger());
 
 		private Logger()
 		{
@@ -18,22 +18,22 @@
 
 		public void Debug(string module, string message, params object[] args)
 		{
-			this.Log(LogType.Debug, module, message, args);
+			Log(LogType.Debug, module, message, args);
 		}
 
 		public void Error(string module, string message, params object[] args)
 		{
-			this.Log(LogType.Error, module, message, args);
+			Log(LogType.Error, module, message, args);
 		}
 
 		public void Info(string module, string message, params object[] args)
 		{
-			this.Log(LogType.Info, module, message, args);
+			Log(LogType.Info, module, message, args);
 		}
 
 		public void Warn(string module, string message, params object[] args)
 		{
-			this.Log(LogType.Warning, module, message, args);
+			Log(LogType.Warning, module, message, args);
 		}
 
 		private void Log(LogType logType, string module, string message, params object[] args)

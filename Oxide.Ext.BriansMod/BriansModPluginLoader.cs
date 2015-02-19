@@ -1,8 +1,7 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
 	using System.Collections.Generic;
-
-	using Oxide.Core.Plugins;
+	using Core.Plugins;
 
 	public class BriansModPluginLoader : PluginLoader
 	{
@@ -19,7 +18,7 @@
 
 		public override IEnumerable<string> ScanDirectory(string directory)
 		{
-			return new[] { "briansmod" };
+			return new[] {"briansmod"};
 		}
 	}
 }

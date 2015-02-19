@@ -1,7 +1,6 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
-	using Oxide.Ext.BriansMod.Model;
-
+	using Model;
 	using UnityEngine;
 
 	public interface IWrapper

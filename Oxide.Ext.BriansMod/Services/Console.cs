@@ -16,7 +16,7 @@
 
 		public void Send(Connection conn, string message, params object[] args)
 		{
-			this.Send(conn.player as BasePlayer, message, args);
+			Send(conn.player as BasePlayer, message, args);
 		}
 	}
 }

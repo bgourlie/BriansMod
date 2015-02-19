@@ -1,20 +1,20 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
-	using Oxide.Ext.BriansMod.Model;
+	using Model;
 
 	public class WrappedAttackEntity : WrappedHeldEntity, IAttackEntity
 	{
-		private readonly AttackEntity attackEntity;
+		private readonly AttackEntity _attackEntity;
 
 		public WrappedAttackEntity(AttackEntity attackEntity)
 			: base(attackEntity)
 		{
-			this.attackEntity = attackEntity;
+			_attackEntity = attackEntity;
 		}
 
 		public override string ToString()
 		{
-			return this.attackEntity.ToString();
+			return _attackEntity.ToString();
 		}
 	}
 }

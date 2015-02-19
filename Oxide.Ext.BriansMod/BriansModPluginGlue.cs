@@ -1,41 +1,34 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
 	using System.Linq;
-
+	using Core.Plugins;
+	using JetBrains.Annotations;
+	using Model;
 	using Network;
-
-	using Oxide.Core.Plugins;
-	using Oxide.Ext.BriansMod.Model;
-	using Oxide.Ext.BriansMod.Services;
-	using Oxide.Ext.BriansMod.Wrappers;
-	using Oxide.Rust.Libraries;
-
+	using Rust.Libraries;
+	using Services;
 	using UnityEngine;
+	using Wrappers;
 
 	public class BriansModPluginGlue : CSPlugin
 	{
 		private const string Module = "PluginGlue";
-
-		private readonly IChat chat;
-
-		private readonly IConsole console;
-
-		private readonly ILogger logger;
-
-		private readonly BriansModPlugin plugin = new BriansModPlugin();
-
-		private readonly IWrapper wrapper;
+		private readonly IChat _chat;
+		private readonly IConsole _console;
+		private readonly ILogger _logger;
+		private readonly BriansModPlugin _plugin = new BriansModPlugin();
+		private readonly IWrapper _wrapper;
 
 		public BriansModPluginGlue(ILogger logger, IConsole console, IChat chat, IWrapper wrapper)
 		{
-			this.Name = "bmod";
-			this.Title = "Brian's Mod";
-			this.Author = "W. Brian Gourlie";
-			this.HasConfig = false;
-			this.logger = logger;
-			this.console = console;
-			this.chat = chat;
-			this.wrapper = wrapper;
+			Name = "bmod";
+			Title = "Brian's Mod";
+			Author = "W. Brian Gourlie";
+			HasConfig = false;
+			_logger = logger;
+			_console = console;
+			_chat = chat;
+			_wrapper = wrapper;
 		}
 
 		public BriansModPluginGlue()
@@ -43,52 +36,52 @@
 		{
 		}
 
-		[HookMethod("Init")]
+		[HookMethod("Init"), UsedImplicitly]
 		private void Init()
 		{
-			this.plugin.Init();
+			_plugin.Init();
 #if DEBUG
 			// Add a bunch of commands that make debugging easier
-			this.logger.Warn(Module, "BUILT IN DEBUG MODE.  DO NOT USE ON PRODUCTION SERVERS.");
-			this.chat.AddCommand("tp", this, "OnTp");
-			this.chat.AddCommand("arm", this, "OnArm");
-			this.chat.AddCommand("listitems", this, "OnListItems");
+			_logger.Warn(Module, "BUILT IN DEBUG MODE.  DO NOT USE ON PRODUCTION SERVERS.");
+			_chat.AddCommand("tp", this, "OnTp");
+			_chat.AddCommand("arm", this, "OnArm");
+			_chat.AddCommand("listitems", this, "OnListItems");
 #endif
 		}
 
-		[HookMethod("OnItemDeployed")]
+		[HookMethod("OnItemDeployed"), UsedImplicitly]
 		private void OnItemDeployed(Deployer deployer, BaseEntity deployedEntity)
 		{
 			IMonoBehavior baseEntity;
-			if (this.wrapper.TryWrap(deployedEntity, out baseEntity))
+			if (_wrapper.TryWrap(deployedEntity, out baseEntity))
 			{
-				this.plugin.OnItemDeployed(new WrappedDeployer(deployer), (IBaseEntity)baseEntity);
+				_plugin.OnItemDeployed(new WrappedDeployer(deployer), (IBaseEntity) baseEntity);
 			}
 		}
 
-		[HookMethod("OnEntityAttacked")]
+		[HookMethod("OnEntityAttacked"), UsedImplicitly]
 		private void OnEntityAttacked(MonoBehaviour entity, HitInfo hitInfo)
 		{
 			IMonoBehavior wrappedEntity;
-			if (this.wrapper.TryWrap(entity, out wrappedEntity))
+			if (_wrapper.TryWrap(entity, out wrappedEntity))
 			{
-				this.plugin.OnEntityAttacked(wrappedEntity, new WrappedHitInfo(hitInfo));
+				_plugin.OnEntityAttacked(wrappedEntity, new WrappedHitInfo(hitInfo));
 			}
 		}
 
-		[HookMethod("OnEntityDeath")]
+		[HookMethod("OnEntityDeath"), UsedImplicitly]
 		private void OnEntityDeath(MonoBehaviour entity, HitInfo hitInfo)
 		{
 			IMonoBehavior wrappedEntity;
-			if (this.wrapper.TryWrap(entity, out wrappedEntity))
+			if (_wrapper.TryWrap(entity, out wrappedEntity))
 			{
-				this.plugin.OnEntityDeath(wrappedEntity, new WrappedHitInfo(hitInfo));
+				_plugin.OnEntityDeath(wrappedEntity, new WrappedHitInfo(hitInfo));
 			}
 		}
 
 #if DEBUG
 		// Add a bunch of commands that make debugging easier
-		[HookMethod("OnTp")]
+		[HookMethod("OnTp"), UsedImplicitly]
 		private void OnTp(BasePlayer player, string command, string[] args)
 		{
 			var blah = new Rust();
@@ -96,12 +89,12 @@
 			var toLoc = player.transform.position;
 			for (var i = 1; i < conns.Count; i++)
 			{
-				var playerToMove = (BasePlayer)conns[i].player;
+				var playerToMove = (BasePlayer) conns[i].player;
 				blah.ForcePlayerPosition(playerToMove, toLoc.x, toLoc.y, toLoc.z);
 			}
 		}
 
-		[HookMethod("OnArm")]
+		[HookMethod("OnArm"), UsedImplicitly]
 		private void OnArm(BasePlayer player, string command, string[] args)
 		{
 			player.inventory.GiveItem(4131848, 1000); // pistol rounds
@@ -124,13 +117,13 @@
 			player.inventory.GiveItem(-892070738, 10000); // stones
 		}
 
-		[HookMethod("OnListItems")]
+		[HookMethod("OnListItems"), UsedImplicitly]
 		private void OnListItems(BasePlayer player, string command, string[] args)
 		{
 			var itemsDefinition = ItemManager.GetItemDefinitions();
 			foreach (var item in itemsDefinition.OrderBy(i => i.displayName.english))
 			{
-				this.console.Send(player, "{0} ({1}): {2}", item.displayName.english, item.rarity, item.itemid);
+				_console.Send(player, "{0} ({1}): {2}", item.displayName.english, item.rarity, item.itemid);
 			}
 		}
 #endif

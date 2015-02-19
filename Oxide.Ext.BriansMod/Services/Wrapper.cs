@@ -1,17 +1,14 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
-	using Oxide.Ext.BriansMod.Model;
-	using Oxide.Ext.BriansMod.Wrappers;
-
+	using Model;
 	using UnityEngine;
+	using Wrappers;
 
 	public class Wrapper : IWrapper
 	{
 		private const string Module = "Wrapper";
-
-		private static Wrapper instance;
-
-		private readonly ILogger logger;
+		private static Wrapper _instance;
+		private readonly ILogger _logger;
 
 		public Wrapper()
 			: this(Logger.Instance)
@@ -20,10 +17,10 @@
 
 		public Wrapper(ILogger logger)
 		{
-			this.logger = logger;
+			_logger = logger;
 		}
 
-		public static Wrapper Instance => instance ?? (instance = new Wrapper());
+		public static Wrapper Instance => _instance ?? (_instance = new Wrapper());
 
 		public bool TryWrap(MonoBehaviour unwrapped, out IMonoBehavior wrapped)
 		{
@@ -55,7 +52,7 @@
 				return true;
 			}
 
-			this.logger.Warn(Module, "Unable to wrap object {0}", unwrapped);
+			_logger.Warn(Module, "Unable to wrap object {0}", unwrapped);
 			wrapped = null;
 			return false;
 		}

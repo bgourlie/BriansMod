@@ -1,18 +1,15 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
+	using Core;
+	using Core.Plugins;
 	using Network;
-
-	using Oxide.Core;
-	using Oxide.Core.Plugins;
-	using Oxide.Rust.Libraries;
+	using Rust.Libraries;
 
 	public class Chat : IChat
 	{
-		private static Chat instance;
-
+		private static Chat _instance;
 		private static readonly Command Command = Interface.GetMod().GetLibrary<Command>("Command");
-
-		public static Chat Instance => instance ?? (instance = new Chat());
+		public static Chat Instance => _instance ?? (_instance = new Chat());
 
 		public void Send(Connection conn, string message, params object[] args)
 		{

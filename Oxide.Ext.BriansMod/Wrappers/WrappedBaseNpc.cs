@@ -1,6 +1,6 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
-	using Oxide.Ext.BriansMod.Model;
+	using Model;
 
 	public class WrappedBaseNpc : WrappedBaseCombatEntity, IBaseNpc
 	{

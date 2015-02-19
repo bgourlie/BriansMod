@@ -2,27 +2,19 @@
 {
 	using System;
 	using System.IO;
-
-	using Oxide.Ext.BriansMod.Model;
-	using Oxide.Ext.BriansMod.Services;
+	using Model;
+	using Services;
 
 	public class BriansModPlugin
 	{
 		private const string Module = "Plugin";
-
-		private readonly IChat chat;
-
-		private readonly IConfiguration config;
-
-		private readonly IData data;
-
-		private readonly IDeaths deaths;
-
-		private readonly IInjuries injuries;
-
-		private readonly ILogger logger;
-
-		private readonly ITraps traps;
+		private readonly IChat _chat;
+		private readonly IConfiguration _config;
+		private readonly IData _data;
+		private readonly IDeaths _deaths;
+		private readonly IInjuries _injuries;
+		private readonly ILogger _logger;
+		private readonly ITraps _traps;
 
 		public BriansModPlugin(
 			ILogger logger,
@@ -33,13 +25,13 @@
 			IInjuries injuries,
 			ITraps traps)
 		{
-			this.deaths = deaths;
-			this.logger = logger;
-			this.config = config;
-			this.data = data;
-			this.injuries = injuries;
-			this.chat = chat;
-			this.traps = traps;
+			_deaths = deaths;
+			_logger = logger;
+			_config = config;
+			_data = data;
+			_injuries = injuries;
+			_chat = chat;
+			_traps = traps;
 		}
 
 		public BriansModPlugin()
@@ -56,20 +48,21 @@
 
 		public void Init()
 		{
-			var filename = Path.Combine(this.config.DataDirectory, "stats.db");
-			if (!filename.StartsWith(this.config.DataDirectory, StringComparison.Ordinal))
+			string filename = Path.Combine(_config.DataDirectory, "stats.db");
+			if (!filename.StartsWith(_config.DataDirectory, StringComparison.Ordinal))
 			{
 				throw new Exception("Only access to oxide directory!");
 			}
-			var connString = string.Format("Data Source={0};Version=3;", filename);
-			this.data.InitializeStore(connString);
+			string connString = string.Format("Data Source={0};Version=3;", filename);
+			_data.InitializeStore(connString);
 		}
 
 		public void OnItemDeployed(IDeployer deployer, IBaseEntity deployedEntity)
 		{
-			if (deployedEntity is ITrap)
+			var trap = deployedEntity as ITrap;
+			if (trap != null)
 			{
-				this.traps.RecordTrap(deployer.OwnerPlayer, (ITrap)deployedEntity);
+				_traps.RecordTrap(deployer.OwnerPlayer, trap);
 			}
 		}
 
@@ -78,25 +71,29 @@
 			var player = entity as IBasePlayer;
 			if (player != null)
 			{
-				this.injuries.UpdateInjuryStatus(hitInfo);
+				_injuries.UpdateInjuryStatus(hitInfo);
 			}
 		}
 
 		public void OnEntityDeath(IMonoBehavior entity, IHitInfo hitinfo)
 		{
 			PvpDeath pvpDeath;
-			if (this.deaths.TryResolvePvpDeath(entity, hitinfo, out pvpDeath))
+			if (_deaths.TryResolvePvpDeath(entity, hitinfo, out pvpDeath))
 			{
-				this.deaths.Record(pvpDeath);
-				this.chat.Broadcast(this.deaths.GetDeathMessage(pvpDeath));
-			}
-			else if (entity is ITrap)
-			{
-				this.traps.DestroyTrap((ITrap)entity);
+				_deaths.Record(pvpDeath);
+				_chat.Broadcast(_deaths.GetDeathMessage(pvpDeath));
 			}
 			else
 			{
-				this.logger.Debug(Module, "Ignoring non-pvp death.");
+				var trap = entity as ITrap;
+				if (trap != null)
+				{
+					_traps.DestroyTrap(trap);
+				}
+				else
+				{
+					_logger.Debug(Module, "Ignoring non-pvp death.");
+				}
 			}
 		}
 	}

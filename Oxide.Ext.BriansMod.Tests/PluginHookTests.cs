@@ -2,11 +2,9 @@
 
 namespace Oxide.Ext.BriansMod.Tests
 {
+	using Model;
 	using Moq;
-
-	using Oxide.Ext.BriansMod.Model;
-	using Oxide.Ext.BriansMod.Services;
-
+	using Services;
 	using Xunit;
 
 	public class PluginHookTests
@@ -35,40 +33,34 @@ namespace Oxide.Ext.BriansMod.Tests
 		private class Factory
 		{
 			public readonly Mock<IChat> chatMock;
-
 			public readonly Mock<IConfiguration> configMock;
-
 			public readonly Mock<IData> dataMock;
-
 			public readonly Mock<IDeaths> deathsMock;
-
 			public readonly Mock<IInjuries> injuriesMock;
-
 			public readonly Mock<ILogger> loggerMock;
-
 			public readonly Mock<ITraps> trapsMock;
 
 			public Factory()
 			{
-				this.chatMock = new Mock<IChat>();
-				this.configMock = new Mock<IConfiguration>();
-				this.loggerMock = new Mock<ILogger>();
-				this.deathsMock = new Mock<IDeaths>();
-				this.injuriesMock = new Mock<IInjuries>();
-				this.dataMock = new Mock<IData>();
-				this.trapsMock = new Mock<ITraps>();
+				chatMock = new Mock<IChat>();
+				configMock = new Mock<IConfiguration>();
+				loggerMock = new Mock<ILogger>();
+				deathsMock = new Mock<IDeaths>();
+				injuriesMock = new Mock<IInjuries>();
+				dataMock = new Mock<IData>();
+				trapsMock = new Mock<ITraps>();
 			}
 
 			public BriansModPlugin GetPlugin()
 			{
 				return new BriansModPlugin(
-					this.loggerMock.Object,
-					this.dataMock.Object,
-					this.chatMock.Object,
-					this.configMock.Object,
-					this.deathsMock.Object,
-					this.injuriesMock.Object,
-					this.trapsMock.Object);
+					loggerMock.Object,
+					dataMock.Object,
+					chatMock.Object,
+					configMock.Object,
+					deathsMock.Object,
+					injuriesMock.Object,
+					trapsMock.Object);
 			}
 		}
 	}

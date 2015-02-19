@@ -1,45 +1,42 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
 	using global::Rust;
-
-	using Oxide.Ext.BriansMod.Model;
-	using Oxide.Ext.BriansMod.Services;
+	using Model;
+	using Services;
 
 	public class WrappedHitInfo : IHitInfo
 	{
-		private readonly HitInfo hitInfo;
-
-		private IBaseEntity hitEntity;
-
-		private IBaseEntity initiator;
+		private readonly HitInfo _hitInfo;
+		private IBaseEntity _hitEntity;
+		private IBaseEntity _initiator;
 
 		public WrappedHitInfo(HitInfo hitInfo)
 		{
-			this.hitInfo = hitInfo;
+			_hitInfo = hitInfo;
 		}
 
 		public IBaseEntity HitEntity
 		{
 			get
 			{
-				if (this.hitInfo.HitEntity == null)
+				if (_hitInfo.HitEntity == null)
 				{
 					return null;
 				}
 
-				if (this.hitEntity == null)
+				if (_hitEntity == null)
 				{
 					IMonoBehavior b;
-					if (Wrapper.Instance.TryWrap(this.hitInfo.HitEntity, out b))
+					if (Wrapper.Instance.TryWrap(_hitInfo.HitEntity, out b))
 					{
-						this.hitEntity = (IBaseEntity)b;
+						_hitEntity = (IBaseEntity) b;
 					}
 					else
 					{
-						this.hitEntity = new WrappedBaseEntity(this.hitInfo.HitEntity);
+						_hitEntity = new WrappedBaseEntity(_hitInfo.HitEntity);
 					}
 				}
-				return this.hitEntity;
+				return _hitEntity;
 			}
 		}
 
@@ -47,29 +44,28 @@
 		{
 			get
 			{
-				if (this.initiator == null)
+				if (_initiator == null)
 				{
 					IMonoBehavior b;
-					if (Wrapper.Instance.TryWrap(this.hitInfo.Initiator, out b))
+					if (Wrapper.Instance.TryWrap(_hitInfo.Initiator, out b))
 					{
-						this.initiator = (IBaseEntity)b;
+						_initiator = (IBaseEntity) b;
 					}
 					else
 					{
-						this.initiator = new WrappedBaseEntity(this.hitInfo.Initiator);
+						_initiator = new WrappedBaseEntity(_hitInfo.Initiator);
 					}
 				}
-				return this.initiator;
+				return _initiator;
 			}
 		}
 
-		public IAttackEntity Weapon => new WrappedAttackEntity(this.hitInfo.Weapon);
-
-		public DamageTypeList DamageTypes => this.hitInfo.damageTypes;
+		public IAttackEntity Weapon => new WrappedAttackEntity(_hitInfo.Weapon);
+		public DamageTypeList DamageTypes => _hitInfo.damageTypes;
 
 		public override string ToString()
 		{
-			return this.hitInfo.ToString();
+			return _hitInfo.ToString();
 		}
 	}
 }

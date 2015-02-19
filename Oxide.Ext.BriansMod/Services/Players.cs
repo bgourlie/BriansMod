@@ -1,14 +1,12 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System.Linq;
-
-	using Oxide.Ext.BriansMod.Model;
-	using Oxide.Ext.BriansMod.Wrappers;
+	using Model;
+	using Wrappers;
 
 	public class Players : IPlayers
 	{
 		private static Players _instance;
-
 		public static Players Instance => _instance ?? (_instance = new Players());
 
 		public bool TryFindPlayerById(ulong userId, out IBasePlayer player)
