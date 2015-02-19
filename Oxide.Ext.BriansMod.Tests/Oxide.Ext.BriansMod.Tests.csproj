@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataTests.cs" />
+    <Compile Include="InjuriesTests.cs" />
     <Compile Include="PluginHookTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

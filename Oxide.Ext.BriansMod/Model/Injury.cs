@@ -2,6 +2,7 @@
 {
 	using System;
 	using global::Rust;
+	using JetBrains.Annotations;
 
 	public class Injury
 	{
@@ -10,11 +11,10 @@
 		public readonly DateTime InjuryTime;
 		public readonly DamageType PrimaryDamageType;
 		public readonly ulong? TrapId;
-		// Can be null
 		public readonly IAttackEntity Weapon;
 
 		public Injury(
-			IMonoBehavior attacker,
+			[NotNull] IMonoBehavior attacker,
 			IAttackEntity weapon,
 			DamageType primaryDamageType,
 			ulong? trapId,

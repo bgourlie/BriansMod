@@ -7,7 +7,7 @@
 	{
 		private readonly BaseEntity _baseEntity;
 
-		public WrappedBaseEntity(BaseEntity baseEntity)
+		public WrappedBaseEntity(BaseEntity baseEntity) : base(baseEntity)
 		{
 			_baseEntity = baseEntity;
 		}

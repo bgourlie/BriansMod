@@ -1,6 +1,7 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
 	using global::Rust;
+	using JetBrains.Annotations;
 	using Model;
 	using Services;
 
@@ -10,7 +11,7 @@
 		private IBaseEntity _hitEntity;
 		private IBaseEntity _initiator;
 
-		public WrappedHitInfo(HitInfo hitInfo)
+		public WrappedHitInfo([NotNull] HitInfo hitInfo)
 		{
 			_hitInfo = hitInfo;
 		}

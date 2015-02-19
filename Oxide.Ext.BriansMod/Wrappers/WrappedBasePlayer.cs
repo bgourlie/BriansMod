@@ -1,12 +1,13 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
+	using JetBrains.Annotations;
 	using Model;
 
 	public class WrappedBasePlayer : WrappedBaseCombatEntity, IBasePlayer
 	{
 		private readonly BasePlayer _basePlayer;
 
-		public WrappedBasePlayer(BasePlayer basePlayer)
+		public WrappedBasePlayer([NotNull] BasePlayer basePlayer)
 			: base(basePlayer)
 		{
 			_basePlayer = basePlayer;

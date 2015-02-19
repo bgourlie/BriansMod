@@ -43,7 +43,7 @@
 					var killer = player;
 					if (!killer.Equals(victim))
 					{
-						pvpDeath = new PvpDeath(victim, killer, lastInjury);
+						pvpDeath = new PvpDeath(victim, killer, lastInjury, DateTime.UtcNow);
 						return true;
 					}
 				}
@@ -56,8 +56,17 @@
 		public void Record(PvpDeath pvpDeath)
 		{
 			_logger.Info(Module, "Recording death: {0}", pvpDeath);
-			_data.SaveDeath(pvpDeath.Victim.UserId, pvpDeath.Killer.UserId, pvpDeath.Injury.Weapon?.HoldType.ToString(),
-				pvpDeath.Injury.TrapId, pvpDeath.Injury.AttackDistance, DateTime.UtcNow);
+			if (pvpDeath.Injury.TrapId.HasValue)
+			{
+				_data.SaveTrapDeath(pvpDeath.Victim.UserId, pvpDeath.Killer.UserId, pvpDeath.Victim.Transform.position.x,
+					pvpDeath.Victim.Transform.position.y, pvpDeath.Injury.TrapId.Value, pvpDeath.TimeOfDeath);
+			}
+			else
+			{
+				_data.SaveWeaponDeath(pvpDeath.Victim.UserId, pvpDeath.Killer.UserId, pvpDeath.Victim.Transform.position.x,
+					pvpDeath.Victim.Transform.position.y, pvpDeath.Killer.Transform.position.x, pvpDeath.Killer.Transform.position.y,
+					pvpDeath.Injury.Weapon?.HoldType.ToString(), pvpDeath.Injury.AttackDistance, pvpDeath.TimeOfDeath);
+			}
 		}
 
 		public string GetDeathMessage(PvpDeath death)

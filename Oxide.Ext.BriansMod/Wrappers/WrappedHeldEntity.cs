@@ -1,12 +1,13 @@
 ﻿namespace Oxide.Ext.BriansMod.Wrappers
 {
+	using JetBrains.Annotations;
 	using Model;
 
 	public class WrappedHeldEntity : WrappedBaseEntity, IHeldEntity
 	{
 		private readonly HeldEntity _heldEntity;
 
-		public WrappedHeldEntity(HeldEntity heldEntity)
+		public WrappedHeldEntity([NotNull] HeldEntity heldEntity)
 			: base(heldEntity)
 		{
 			_heldEntity = heldEntity;

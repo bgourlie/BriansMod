@@ -45,12 +45,10 @@
 			}
 
 			var newInjury = ResolveInjury(hitInfo);
-			var updated = false;
 			Injury prevInjury;
 			if (!State.TryGetValue(player.UserId, out prevInjury))
 			{
 				State.Add(player.UserId, newInjury);
-				updated = true;
 			}
 			else
 			{
@@ -58,17 +56,11 @@
 				// and have the same damage type, don't update it (very spammy).
 				// This is probably a micro optimization, but fuck it.
 				if (
-					!(prevInjury.Attacker == player && newInjury.Attacker == player
+					!(Equals(prevInjury.Attacker, player) && Equals(newInjury.Attacker, player)
 					  && prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
 				{
 					State[player.UserId] = newInjury;
-					updated = true;
 				}
-			}
-
-			if (updated)
-			{
-				_logger.Debug(Module, "Updated injury for {0} to {1}", player.DisplayName, newInjury);
 			}
 		}
 
@@ -79,15 +71,15 @@
 
 		public Injury ResolveInjury(IHitInfo hitInfo)
 		{
-			IMonoBehavior killer;
+			IBaseEntity initiator;
 			float injuryDistance;
-			ulong? causedByTrap;
+			ulong? trapId;
 
 			// If it's a trap, we attribute the injury to the trap's owner.
 			var trap = hitInfo.Initiator as ITrap;
 			if (trap != null)
 			{
-				causedByTrap = _traps.GetTrapId(trap);
+				trapId = _traps.GetTrapId(trap);
 				ulong ownerId = _traps.GetOwnerId(trap);
 				IBasePlayer player;
 				if (!_players.TryFindPlayerById(ownerId, out player))
@@ -95,17 +87,19 @@
 					_logger.Error(Module, "Unable to find player in ResolveInjury.");
 				}
 				injuryDistance = 0;
-				killer = player;
+				initiator = player;
 			}
 			else
 			{
-				killer = hitInfo.Initiator;
-				causedByTrap = null;
-				injuryDistance = Vector3.Distance(hitInfo.HitEntity.Transform.position, hitInfo.Initiator.Transform.position);
+				initiator = hitInfo.Initiator;
+				trapId = null;
+				injuryDistance = hitInfo.HitEntity != null
+					? Vector3.Distance(hitInfo.HitEntity.Transform.position, initiator.Transform.position)
+					: 0f;
 			}
 
 			var majorityDamageType = hitInfo.DamageTypes.GetMajorityDamageType();
-			return new Injury(killer, hitInfo.Weapon, majorityDamageType, causedByTrap, injuryDistance, DateTime.UtcNow);
+			return new Injury(initiator, hitInfo.Weapon, majorityDamageType, trapId, injuryDistance, DateTime.UtcNow);
 		}
 	}
 }
