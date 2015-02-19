@@ -76,16 +76,7 @@
 		public void Record(PvpDeath pvpDeath)
 		{
 			this.logger.Info(Module, "Recording death: {0}", pvpDeath);
-			using (var cmd = this.data.Connection.CreateCommand())
-			{
-				cmd.CommandText =
-					"INSERT INTO pvpdeaths (victimid, killerid, cause, time) VALUES (@victimid, @killerid, @cause, @time)";
-				cmd.Parameters.AddWithValue("@victimid", pvpDeath.Victim.UserId);
-				cmd.Parameters.AddWithValue("@killerid", pvpDeath.Killer.UserId);
-				cmd.Parameters.AddWithValue("@cause", (int)pvpDeath.Injury.PrimaryDamageType);
-				cmd.Parameters.AddWithValue("@time", DateTime.UtcNow.ToUnixEpoch());
-				cmd.ExecuteNonQuery();
-			}
+			this.data.SaveDeath(pvpDeath.Victim.UserId, pvpDeath.Killer.UserId, DateTime.UtcNow);
 		}
 	}
 }

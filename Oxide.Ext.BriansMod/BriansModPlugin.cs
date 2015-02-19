@@ -1,5 +1,8 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
+	using System;
+	using System.IO;
+
 	using Oxide.Ext.BriansMod.Model;
 	using Oxide.Ext.BriansMod.Services;
 
@@ -9,7 +12,7 @@
 
 		private readonly IChat chat;
 
-		private readonly IConsole console;
+		private readonly IConfiguration config;
 
 		private readonly IData data;
 
@@ -25,14 +28,14 @@
 			ILogger logger,
 			IData data,
 			IChat chat,
-			IConsole console,
+			IConfiguration config,
 			IDeaths deaths,
 			IInjuries injuries,
 			ITraps traps)
 		{
 			this.deaths = deaths;
 			this.logger = logger;
-			this.console = console;
+			this.config = config;
 			this.data = data;
 			this.injuries = injuries;
 			this.chat = chat;
@@ -44,7 +47,7 @@
 				Logger.Instance,
 				Data.Instance,
 				Chat.Instance,
-				Console.Instance,
+				Configuration.Instance,
 				Deaths.Instance,
 				Injuries.Instance,
 				Traps.Instance)
@@ -53,7 +56,13 @@
 
 		public void Init()
 		{
-			this.data.InitializeStore();
+			var filename = Path.Combine(this.config.DataDirectory, "stats.db");
+			if (!filename.StartsWith(this.config.DataDirectory, StringComparison.Ordinal))
+			{
+				throw new Exception("Only access to oxide directory!");
+			}
+			var connString = string.Format("Data Source={0};Version=3;", filename);
+			this.data.InitializeStore(connString);
 		}
 
 		public void OnItemDeployed(IDeployer deployer, IBaseEntity deployedEntity)
@@ -83,7 +92,7 @@
 			}
 			else if (entity is ITrap)
 			{
-				this.traps.DeleteTrap((ITrap)entity);
+				this.traps.DestroyTrap((ITrap)entity);
 			}
 			else
 			{

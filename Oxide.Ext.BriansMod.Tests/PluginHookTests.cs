@@ -15,27 +15,28 @@ namespace Oxide.Ext.BriansMod.Tests
 		public void init_should_initialize_data_store()
 		{
 			var factory = new Factory();
+			factory.configMock.Setup(c => c.DataDirectory).Returns("./");
 			var plugin = factory.GetPlugin();
 			plugin.Init();
-			factory.dataMock.Verify(d => d.InitializeStore(), Times.Once());
+			factory.dataMock.Verify(d => d.InitializeStore(It.IsAny<string>()), Times.Once());
 		}
 
 		[Fact]
-		public void on_entity_death_for_trap_should_delete_trap()
+		public void on_entity_death_for_trap_should_destroy_trap()
 		{
 			var factory = new Factory();
 			var plugin = factory.GetPlugin();
 			var trapMock = new Mock<ITrap>();
 			var hitInfoMock = new Mock<IHitInfo>();
 			plugin.OnEntityDeath(trapMock.Object, hitInfoMock.Object);
-			factory.trapsMock.Verify(t => t.DeleteTrap(trapMock.Object));
+			factory.trapsMock.Verify(t => t.DestroyTrap(trapMock.Object));
 		}
 
 		private class Factory
 		{
 			public readonly Mock<IChat> chatMock;
 
-			public readonly Mock<IConsole> consoleMock;
+			public readonly Mock<IConfiguration> configMock;
 
 			public readonly Mock<IData> dataMock;
 
@@ -50,7 +51,7 @@ namespace Oxide.Ext.BriansMod.Tests
 			public Factory()
 			{
 				this.chatMock = new Mock<IChat>();
-				this.consoleMock = new Mock<IConsole>();
+				this.configMock = new Mock<IConfiguration>();
 				this.loggerMock = new Mock<ILogger>();
 				this.deathsMock = new Mock<IDeaths>();
 				this.injuriesMock = new Mock<IInjuries>();
@@ -64,7 +65,7 @@ namespace Oxide.Ext.BriansMod.Tests
 					this.loggerMock.Object,
 					this.dataMock.Object,
 					this.chatMock.Object,
-					this.consoleMock.Object,
+					this.configMock.Object,
 					this.deathsMock.Object,
 					this.injuriesMock.Object,
 					this.trapsMock.Object);

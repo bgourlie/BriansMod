@@ -6,7 +6,7 @@
 	{
 		void RecordTrap(IBasePlayer player, ITrap trap);
 
-		void DeleteTrap(ITrap trap);
+		void DestroyTrap(ITrap trap);
 
 		ulong GetOwnerId(ITrap trap);
 	}

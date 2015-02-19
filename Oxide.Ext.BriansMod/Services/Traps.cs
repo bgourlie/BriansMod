@@ -30,44 +30,22 @@
 
 		public void RecordTrap(IBasePlayer player, ITrap trap)
 		{
-			using (var cmd = this.data.Connection.CreateCommand())
-			{
-				var trapId = this.GetTrapId(trap);
-				this.logger.Info(Module, "Saving bear trap (id = {0}, owner = {1})", trapId, player.UserId);
-				cmd.CommandText = "INSERT INTO traps (id, ownerid) VALUES (@id, @ownerid);";
-				cmd.Parameters.AddWithValue("@id", trapId);
-				cmd.Parameters.AddWithValue("@ownerid", player.UserId);
-				cmd.ExecuteNonQuery();
-			}
-		}
-
-		public void DeleteTrap(ITrap trap)
-		{
-			using (var cmd = this.data.Connection.CreateCommand())
-			{
-				var trapId = this.GetTrapId(trap);
-				this.logger.Info(Module, "Deleting bear trap (id = {0})", trapId);
-				cmd.CommandText = "DELETE FROM traps WHERE id = @id";
-				cmd.Parameters.AddWithValue("@id", trapId);
-				cmd.ExecuteNonQuery();
-			}
+			var trapId = this.GetTrapId(trap);
+			this.logger.Info(Module, "Saving bear trap (id = {0}, owner = {1})", trapId, player.UserId);
+			this.data.SaveTrap(trapId, player.UserId);
 		}
 
 		public ulong GetOwnerId(ITrap trap)
 		{
-			using (var cmd = this.data.Connection.CreateCommand())
-			{
-				var trapId = this.GetTrapId(trap);
-				cmd.CommandText = "SELECT ownerid FROM traps WHERE id = @id";
-				cmd.Parameters.AddWithValue("@id", trapId);
-				using (var reader = cmd.ExecuteReader())
-				{
-					reader.Read();
-					var ownerId = reader.GetInt64(0);
-					this.logger.Info(Module, "owner id = {0}", ownerId);
-					return (ulong)ownerId;
-				}
-			}
+			var trapId = this.GetTrapId(trap);
+			return this.data.GetTrapOwnerId(trapId);
+		}
+
+		public void DestroyTrap(ITrap trap)
+		{
+			var trapId = this.GetTrapId(trap);
+			this.logger.Info(Module, "Deleting bear trap (id = {0})", trapId);
+			this.data.SetTrapDestroyed(trapId);
 		}
 
 		// Generate a reasonably unique id based on the trap's x and y coords

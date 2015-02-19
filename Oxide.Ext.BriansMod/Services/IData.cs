@@ -1,11 +1,17 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
-	using System.Data.SQLite;
+	using System;
 
 	public interface IData
 	{
-		SQLiteConnection Connection { get; }
+		void InitializeStore(string connectionString);
 
-		void InitializeStore();
+		void SaveDeath(ulong victimId, ulong killerId, DateTime time);
+
+		void SaveTrap(ulong trapId, ulong ownerId);
+
+		ulong GetTrapOwnerId(ulong trapId);
+
+		void SetTrapDestroyed(ulong trapId);
 	}
 }

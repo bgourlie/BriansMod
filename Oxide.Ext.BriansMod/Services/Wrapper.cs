@@ -9,7 +9,7 @@
 	{
 		private const string Module = "Wrapper";
 
-		private static Wrapper _instance;
+		private static Wrapper instance;
 
 		private readonly ILogger logger;
 
@@ -23,7 +23,7 @@
 			this.logger = logger;
 		}
 
-		public static Wrapper Instance => _instance ?? (_instance = new Wrapper());
+		public static Wrapper Instance => instance ?? (instance = new Wrapper());
 
 		public bool TryWrap(MonoBehaviour unwrapped, out IMonoBehavior wrapped)
 		{
