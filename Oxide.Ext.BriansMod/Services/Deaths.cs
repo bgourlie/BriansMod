@@ -1,6 +1,7 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System;
+	using System.Text;
 
 	using Oxide.Ext.BriansMod.Model;
 
@@ -8,7 +9,7 @@
 	{
 		private const string Module = "Deaths";
 
-		private static Deaths _instance;
+		private static Deaths instance;
 
 		private readonly IData data;
 
@@ -16,25 +17,19 @@
 
 		private readonly ILogger logger;
 
-		private readonly IPlayers players;
-
-		private readonly ITraps traps;
-
 		public Deaths()
-			: this(Logger.Instance, Players.Instance, Injuries.Instance, Data.Instance, Traps.Instance)
+			: this(Logger.Instance, Injuries.Instance, Data.Instance)
 		{
 		}
 
-		public Deaths(ILogger logger, IPlayers players, IInjuries injuries, IData data, ITraps traps)
+		public Deaths(ILogger logger, IInjuries injuries, IData data)
 		{
 			this.logger = logger;
-			this.players = players;
 			this.injuries = injuries;
 			this.data = data;
-			this.traps = traps;
 		}
 
-		public static Deaths Instance => _instance ?? (_instance = new Deaths());
+		public static Deaths Instance => instance ?? (instance = new Deaths());
 
 		public bool TryResolvePvpDeath(IMonoBehavior entity, IHitInfo hitInfo, out PvpDeath pvpDeath)
 		{
@@ -47,20 +42,9 @@
 					lastInjury = this.injuries.ResolveInjury(hitInfo);
 				}
 
-				IBasePlayer killer = null;
-				if (lastInjury.CausedBy is IBasePlayer)
+				if (lastInjury.Attacker is IBasePlayer)
 				{
-					killer = (IBasePlayer)lastInjury.CausedBy;
-				}
-				else if (lastInjury.CausedBy is ITrap)
-				{
-					var ownerId = this.traps.GetOwnerId((ITrap)lastInjury.CausedBy);
-					this.players.TryFindPlayerById(ownerId, out killer);
-					// TODO: add kill to trap
-				}
-
-				if (killer != null)
-				{
+					var killer = (IBasePlayer)lastInjury.Attacker;
 					if (!killer.Equals(victim))
 					{
 						pvpDeath = new PvpDeath(victim, killer, lastInjury);
@@ -77,6 +61,25 @@
 		{
 			this.logger.Info(Module, "Recording death: {0}", pvpDeath);
 			this.data.SaveDeath(pvpDeath.Victim.UserId, pvpDeath.Killer.UserId, DateTime.UtcNow);
+		}
+
+		public string GetDeathMessage(PvpDeath death)
+		{
+			var sb = new StringBuilder(
+				string.Format("{0} was killed by {1}", death.Victim.DisplayName, death.Killer.DisplayName));
+			if (death.Injury.CausedByTrap)
+			{
+				sb.Append("'s trap.");
+			}
+			else
+			{
+				sb.Append(string.Format(" with a {0}", death.Injury.Weapon.HoldType));
+				sb.Append(
+					death.Injury.AttackDistance < 2f
+						? " at point blank range."
+						: string.Format(" at a distance of {0} meters.", death.Injury.AttackDistance));
+			}
+			return sb.ToString();
 		}
 	}
 }

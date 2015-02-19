@@ -87,8 +87,8 @@
 			PvpDeath pvpDeath;
 			if (this.deaths.TryResolvePvpDeath(entity, hitinfo, out pvpDeath))
 			{
-				this.chat.Broadcast(pvpDeath.ToString());
 				this.deaths.Record(pvpDeath);
+				this.chat.Broadcast(this.deaths.GetDeathMessage(pvpDeath));
 			}
 			else if (entity is ITrap)
 			{
@@ -96,7 +96,7 @@
 			}
 			else
 			{
-				this.logger.Info(Module, "Ignoring non-pvp death.");
+				this.logger.Debug(Module, "Ignoring non-pvp death.");
 			}
 		}
 	}

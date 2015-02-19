@@ -2,6 +2,5 @@
 {
 	public interface IAttackEntity : IHeldEntity
 	{
-		HoldType HoldType { get; }
 	}
 }

@@ -4,41 +4,35 @@
 
 	using global::Rust;
 
-	using Oxide.Ext.BriansMod.Services;
-
 	public class Injury
 	{
 		public readonly float AttackDistance;
 
-		public readonly IMonoBehavior CausedBy;
+		public readonly IMonoBehavior Attacker;
+
+		public readonly bool CausedByTrap;
 
 		public readonly DateTime InjuryTime;
 
 		public readonly DamageType PrimaryDamageType;
 
+		// Can be null
 		public readonly IAttackEntity Weapon;
 
 		public Injury(
-			IMonoBehavior causedBy,
+			IMonoBehavior attacker,
 			IAttackEntity weapon,
 			DamageType primaryDamageType,
+			bool causedByTrap,
 			float attackDistance,
 			DateTime injuryTime)
 		{
-			this.CausedBy = causedBy;
+			this.Attacker = attacker;
 			this.Weapon = weapon;
 			this.InjuryTime = injuryTime;
 			this.PrimaryDamageType = primaryDamageType;
+			this.CausedByTrap = causedByTrap;
 			this.AttackDistance = attackDistance;
-		}
-
-		public override string ToString()
-		{
-			return string.Format(
-				"{0} damage inflicted by {1} from a distance of {2}",
-				this.PrimaryDamageType,
-				this.Weapon?.GetDisplayName() ?? this.CausedBy.GetDisplayName(),
-				this.AttackDistance);
 		}
 	}
 }

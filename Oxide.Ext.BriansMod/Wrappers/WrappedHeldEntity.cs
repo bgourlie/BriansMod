@@ -12,6 +12,8 @@
 			this.heldEntity = heldEntity;
 		}
 
+		public HoldType HoldType => this.heldEntity.holdType;
+
 		public IBasePlayer OwnerPlayer => new WrappedBasePlayer(this.heldEntity.ownerPlayer);
 
 		public override string ToString()

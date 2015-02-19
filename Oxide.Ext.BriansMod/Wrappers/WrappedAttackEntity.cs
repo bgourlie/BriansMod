@@ -12,8 +12,6 @@
 			this.attackEntity = attackEntity;
 		}
 
-		public HoldType HoldType => this.attackEntity.holdType;
-
 		public override string ToString()
 		{
 			return this.attackEntity.ToString();
