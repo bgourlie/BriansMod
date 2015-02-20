@@ -21,6 +21,11 @@
 			return _basePlayer.IsDead();
 		}
 
+		public void SendConsoleCommand(string command, params object[] options)
+		{
+			_basePlayer.SendConsoleCommand(command, options);
+		}
+
 		public override string ToString()
 		{
 			return _basePlayer.ToString();
