@@ -1,5 +1,6 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
+	using System.IO;
 	using System.Linq;
 	using Core.Plugins;
 	using JetBrains.Annotations;
@@ -18,6 +19,7 @@
 		private readonly ILogger _logger;
 		private readonly BriansModPlugin _plugin = new BriansModPlugin();
 		private readonly IWrapper _wrapper;
+		private bool _initialized = false;
 
 		public BriansModPluginGlue(ILogger logger, IConsole console, IChat chat, IWrapper wrapper)
 		{
@@ -45,8 +47,29 @@
 			_logger.Warn(Module, "BUILT IN DEBUG MODE.  DO NOT USE ON PRODUCTION SERVERS.");
 			_chat.AddCommand("tp", this, "OnTp");
 			_chat.AddCommand("arm", this, "OnArm");
+			_chat.AddCommand("loc", this, "OnLoc");
 			_chat.AddCommand("listitems", this, "OnListItems");
 #endif
+		}
+
+		[HookMethod("OnTick")]
+		private void OnTick()
+		{
+			if (_initialized)
+			{
+				return;
+			}
+
+			_initialized = true;
+			_logger.Info(Module, "Generating Map");
+			var maps = MapGen.RenderHeightMap(1000);
+			var heightMapBytes = maps[0].EncodeToPNG();
+			var colorMapBytes = maps[1].EncodeToPNG();
+			var normalMapBytes = maps[2].EncodeToPNG();
+			File.WriteAllBytes("./heightmap.png", heightMapBytes);
+			File.WriteAllBytes("./colormap.png", colorMapBytes);
+			File.WriteAllBytes("./normalmap.png", normalMapBytes);
+			_logger.Info(Module, "Done generating map!");
 		}
 
 		[HookMethod("OnItemDeployed"), UsedImplicitly]
@@ -117,6 +140,13 @@
 			player.inventory.GiveItem(-892070738, 10000); // stones
 		}
 
+		[HookMethod("OnLoc"), UsedImplicitly]
+		private void OnLoc(BasePlayer player, string command, string[] args)
+		{
+			this._chat.Broadcast(string.Format("x={0}, y={1}, z={2}", player.transform.position.x, player.transform.position.y, player.transform.position.z));
+			this._chat.Broadcast(string.Format("TerrainMeta.Height = {0}", TerrainMeta.HeightMap.GetHeight(player.transform.position)));
+		}
+
 		[HookMethod("OnListItems"), UsedImplicitly]
 		private void OnListItems(BasePlayer player, string command, string[] args)
 		{
@@ -125,6 +155,7 @@
 			{
 				_console.Send(player, "{0} ({1}): {2}", item.displayName.english, item.rarity, item.itemid);
 			}
+
 		}
 #endif
 	}
