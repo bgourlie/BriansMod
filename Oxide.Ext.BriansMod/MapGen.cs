@@ -1,7 +1,6 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
 	using System;
-	using Services;
 	using UnityEngine;
 
 	public class MapGen
@@ -22,7 +21,6 @@
 			}
 			return color;
 		}
-
 
 		private static Color Rgb(int rgb)
 		{
@@ -61,7 +59,7 @@
 					float depthAtPos = TerrainMeta.HeightMap.GetHeight(worldPos) + 100f;
 					var colorAtPos = GetColorAt(worldPos);
 					var normalAtPos = TerrainMeta.NormalMap.GetNormal(worldPos);
-					var colorVal = Convert.ToInt32(depthAtPos * 10000f);
+					int colorVal = Convert.ToInt32(depthAtPos*10000f);
 					var depthColor = Rgb(colorVal);
 					var normalColor = NormalToColor(normalAtPos);
 					heightMap.SetPixel(index, y, depthColor);
@@ -69,7 +67,7 @@
 					normalMap.SetPixel(index, y, normalColor);
 				}
 			}
-			return new [] { heightMap, colorMap, normalMap } ;
+			return new[] {heightMap, colorMap, normalMap};
 		}
 
 		public static Texture2D Render2D(int outSize)

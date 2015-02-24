@@ -19,7 +19,7 @@
 		private readonly ILogger _logger;
 		private readonly BriansModPlugin _plugin = new BriansModPlugin();
 		private readonly IWrapper _wrapper;
-		private bool _initialized = false;
+		private bool _initialized;
 
 		public BriansModPluginGlue(ILogger logger, IConsole console, IChat chat, IWrapper wrapper)
 		{
@@ -52,7 +52,7 @@
 #endif
 		}
 
-		[HookMethod("OnTick")]
+		[HookMethod("OnTick"), UsedImplicitly]
 		private void OnTick()
 		{
 			if (_initialized)
@@ -66,6 +66,8 @@
 			var heightMapBytes = maps[0].EncodeToPNG();
 			var colorMapBytes = maps[1].EncodeToPNG();
 			var normalMapBytes = maps[2].EncodeToPNG();
+			string monuments = MapData.GetMonuments();
+			File.WriteAllText("./monuments.json", monuments);
 			File.WriteAllBytes("./heightmap.png", heightMapBytes);
 			File.WriteAllBytes("./colormap.png", colorMapBytes);
 			File.WriteAllBytes("./normalmap.png", normalMapBytes);
@@ -143,8 +145,9 @@
 		[HookMethod("OnLoc"), UsedImplicitly]
 		private void OnLoc(BasePlayer player, string command, string[] args)
 		{
-			this._chat.Broadcast(string.Format("x={0}, y={1}, z={2}", player.transform.position.x, player.transform.position.y, player.transform.position.z));
-			this._chat.Broadcast(string.Format("TerrainMeta.Height = {0}", TerrainMeta.HeightMap.GetHeight(player.transform.position)));
+			_chat.Broadcast(string.Format("x={0}, y={1}, z={2}", player.transform.position.x, player.transform.position.y,
+				player.transform.position.z));
+			_chat.Broadcast(string.Format("TerrainMeta.Height = {0}", TerrainMeta.HeightMap.GetHeight(player.transform.position)));
 		}
 
 		[HookMethod("OnListItems"), UsedImplicitly]
@@ -155,7 +158,6 @@
 			{
 				_console.Send(player, "{0} ({1}): {2}", item.displayName.english, item.rarity, item.itemid);
 			}
-
 		}
 #endif
 	}

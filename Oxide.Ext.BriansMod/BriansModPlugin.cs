@@ -90,10 +90,6 @@
 				{
 					_traps.DestroyTrap(trap);
 				}
-				else
-				{
-					_logger.Debug(Module, "Ignoring non-pvp death.");
-				}
 			}
 		}
 	}
