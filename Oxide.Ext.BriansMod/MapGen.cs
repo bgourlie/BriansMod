@@ -23,24 +23,10 @@
 			return color;
 		}
 
-		private static Color Rgb(int r, int g, int b)
-		{
-			return new Color((r >> 16 & 255)/256f, (g >> 8 & 255)/256f, (b & 255)/256f, 1f);
-		}
 
 		private static Color Rgb(int rgb)
 		{
-			return new Color((rgb >> 16 & 255)/256f, (rgb >> 8 & 255)/256f, (rgb & 255)/256f, 1f);
-		}
-		
-		private static Color RgbOrig(int rgb)
-		{
-			return new Color((rgb >> 16 & byte.MaxValue)/256f, (rgb >> 8 & byte.MaxValue)/256f, (rgb & byte.MaxValue)/256f, 1f);
-		}
-
-		private static Color Rgba(int rgba)
-		{
-			return new Color((rgba >> 24 & 255)/256f, (rgba >> 16 & 255)/256f, (rgba >> 8 & 255)/256f, (rgba & 255)/256f);
+			return new Color((rgb >> 16 & 255)/255f, (rgb >> 8 & 255)/255f, (rgb & 255)/255f, 1f);
 		}
 
 		private static Color NormalToColor(Vector3 normal)
@@ -75,8 +61,7 @@
 					float depthAtPos = TerrainMeta.HeightMap.GetHeight(worldPos) + 100f;
 					var colorAtPos = GetColorAt(worldPos);
 					var normalAtPos = TerrainMeta.NormalMap.GetNormal(worldPos);
-					var colorVal = Convert.ToInt32(Mathf.Lerp(0f, 16777216f, depthAtPos/300f));
-					// var depthColor = Mathf.Lerp(0f, 16581375f, depthAtPos/300f);
+					var colorVal = Convert.ToInt32(depthAtPos * 10000f);
 					var depthColor = Rgb(colorVal);
 					var normalColor = NormalToColor(normalAtPos);
 					heightMap.SetPixel(index, y, depthColor);
