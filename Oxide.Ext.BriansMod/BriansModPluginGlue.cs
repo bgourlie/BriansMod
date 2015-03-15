@@ -1,6 +1,7 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
 	using System.Linq;
+	using System.Text;
 	using Core.Plugins;
 	using JetBrains.Annotations;
 	using Model;
@@ -14,25 +15,27 @@
 	{
 		private const string Module = "PluginGlue";
 		private readonly IChat _chat;
+		private readonly IData _data;
 		private readonly IConsole _console;
 		private readonly ILogger _logger;
 		private readonly BriansModPlugin _plugin = new BriansModPlugin();
 		private readonly IWrapper _wrapper;
 
-		public BriansModPluginGlue(ILogger logger, IConsole console, IChat chat, IWrapper wrapper)
+		public BriansModPluginGlue(ILogger logger, IConsole console, IChat chat, IWrapper wrapper, IData data)
 		{
 			Name = "bmod";
 			Title = "Brian's Mod";
-			Author = "W. Brian Gourlie";
+			Author = "bgzee";
 			HasConfig = false;
 			_logger = logger;
 			_console = console;
 			_chat = chat;
 			_wrapper = wrapper;
+			_data = data;
 		}
 
 		public BriansModPluginGlue()
-			: this(Logger.Instance, Console.Instance, Chat.Instance, Wrapper.Instance)
+			: this(Logger.Instance, Console.Instance, Chat.Instance, Wrapper.Instance, Data.Instance)
 		{
 		}
 
@@ -40,12 +43,13 @@
 		private void Init()
 		{
 			_plugin.Init();
+			_chat.AddCommand("stats", this, "OnStats");
 #if DEBUG
 			// Add a bunch of commands that make debugging easier
 			_logger.Warn(Module, "BUILT IN DEBUG MODE.  DO NOT USE ON PRODUCTION SERVERS.");
 			_chat.AddCommand("tp", this, "OnTp");
 			_chat.AddCommand("arm", this, "OnArm");
-			_chat.AddCommand("listitems", this, "OnListItems");
+			_console.AddCommand("bmod.listitems", this, "OnListItems");
 #endif
 		}
 
@@ -77,6 +81,33 @@
 			{
 				_plugin.OnEntityDeath(wrappedEntity, new WrappedHitInfo(hitInfo));
 			}
+		}
+
+		[HookMethod("OnStats"), UsedImplicitly]
+		private void OnStats(BasePlayer player, string command, string[] args)
+		{
+			var stats = _data.GetWeaponStats().ToList();
+			if (stats.Count == 0)
+			{
+				player.ChatMessage("There are no stats to display");
+				return;
+			}
+			
+			player.ChatMessage("View stats in the F1 console.");
+
+			var sb = new StringBuilder();
+			foreach (var stat in stats)
+			{
+				sb.AppendLine("--------");
+				sb.AppendLine(stat.Weapon);
+				sb.AppendLine("--------");
+				if (stat.BestDistance > 0f)
+				{
+					sb.AppendLine(string.Format("Longest Kill: {0} meters", stat.BestDistance));
+				}
+				sb.AppendLine(string.Format("Total Kills: {0}", stat.NumKills));
+			}
+			_console.Send(player, sb.ToString());
 		}
 
 #if DEBUG
@@ -115,15 +146,16 @@
 			player.inventory.GiveItem(3655341, 10000); // wood
 			player.inventory.GiveItem(-1153983671, 20); // wolf meat
 			player.inventory.GiveItem(-892070738, 10000); // stones
+			player.inventory.GiveItem(-351194901, 10000); // metal frags
 		}
 
 		[HookMethod("OnListItems"), UsedImplicitly]
-		private void OnListItems(BasePlayer player, string command, string[] args)
+		private void OnListItems(ConsoleSystem.Arg args)
 		{
 			var itemsDefinition = ItemManager.GetItemDefinitions();
 			foreach (var item in itemsDefinition.OrderBy(i => i.displayName.english))
 			{
-				_console.Send(player, "{0} ({1}): {2}", item.displayName.english, item.rarity, item.itemid);
+				_console.Send(args.connection, "{0} ({1}): {2}", item.displayName.english, item.rarity, item.itemid);
 			}
 		}
 #endif
