@@ -31,16 +31,31 @@
 			var victim = entity as IBasePlayer;
 			if (victim != null)
 			{
-				Injury lastInjury;
-				if (!_injuries.TryGetLastRelevantInjury(victim, out lastInjury))
+				var lastInjury = _injuries.ResolveInjury(hitInfo);
+				var killer = lastInjury.Attacker as IBasePlayer;
+
+				// trivial case: 
+				// The death occurred as the direct result of a player attacking another player
+				if (killer != null && !Equals(lastInjury.Attacker, victim))
 				{
-					lastInjury = _injuries.ResolveInjury(hitInfo);
+					pvpDeath = new PvpDeath(victim, killer, lastInjury, DateTime.UtcNow);
+					return true;
 				}
 
-				var player = lastInjury.Attacker as IBasePlayer;
-				if (player != null)
+				// Non-trivial case:
+				// The death may have been caused indirectly (bled out) as the result of another player
+				// attacking a player, limited to a timeframe of one minute
+				if (!_injuries.TryGetLastRelevantInjury(victim, TimeSpan.FromMinutes(1), out lastInjury))
 				{
-					var killer = player;
+					pvpDeath = null;
+					return false;
+				}
+
+				killer = lastInjury.Attacker as IBasePlayer;
+				// Was the attacker a player?
+				if (killer != null)
+				{
+					// Make sure it wasn't self inflicted...
 					if (!killer.Equals(victim))
 					{
 						pvpDeath = new PvpDeath(victim, killer, lastInjury, DateTime.UtcNow);

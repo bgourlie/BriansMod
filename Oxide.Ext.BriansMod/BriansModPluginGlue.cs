@@ -20,8 +20,9 @@
 		private readonly ILogger _logger;
 		private readonly BriansModPlugin _plugin = new BriansModPlugin();
 		private readonly IWrapper _wrapper;
+		private readonly IPlayers _players;
 
-		public BriansModPluginGlue(ILogger logger, IConsole console, IChat chat, IWrapper wrapper, IData data)
+		public BriansModPluginGlue(ILogger logger, IConsole console, IChat chat, IWrapper wrapper, IData data, IPlayers players)
 		{
 			Name = "bmod";
 			Title = "Brian's Mod";
@@ -32,10 +33,11 @@
 			_chat = chat;
 			_wrapper = wrapper;
 			_data = data;
+			_players = players;
 		}
 
 		public BriansModPluginGlue()
-			: this(Logger.Instance, Console.Instance, Chat.Instance, Wrapper.Instance, Data.Instance)
+			: this(Logger.Instance, Console.Instance, Chat.Instance, Wrapper.Instance, Data.Instance, Players.Instance)
 		{
 		}
 
@@ -44,6 +46,7 @@
 		{
 			_plugin.Init();
 			_chat.AddCommand("stats", this, "OnStats");
+			_chat.AddCommand("who", this, "OnWho");
 #if DEBUG
 			// Add a bunch of commands that make debugging easier
 			_logger.Warn(Module, "BUILT IN DEBUG MODE.  DO NOT USE ON PRODUCTION SERVERS.");
@@ -107,6 +110,25 @@
 				}
 				sb.AppendLine(string.Format("Total Kills: {0}", stat.NumKills));
 			}
+			_console.Send(player, sb.ToString());
+		}
+
+		// Add a bunch of commands that make debugging easier
+		[HookMethod("OnWho"), UsedImplicitly]
+		private void OnWho(BasePlayer player, string command, string[] args)
+		{
+			var sb = new StringBuilder();
+			var activePlayers = _players.ActivePlayers.ToList();
+			player.ChatMessage(string.Format("{0} active players.  Check the F1 console for a list of all players.", activePlayers.Count));
+			sb.AppendLine();
+			sb.AppendLine("----------------");
+			sb.AppendLine(" ACTIVE PLAYERS");
+			sb.AppendLine("----------------");
+			foreach (var activePlayer in activePlayers)
+			{
+				sb.AppendLine(activePlayer.DisplayName);
+			}
+			sb.AppendLine();
 			_console.Send(player, sb.ToString());
 		}
 

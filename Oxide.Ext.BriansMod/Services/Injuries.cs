@@ -35,7 +35,7 @@
 
 			if (player == null
 			    || (player.IsDead()
-			        || (player == hitInfo.Initiator && hitInfo.DamageTypes.GetMajorityDamageType() == DamageType.Bleeding)))
+			        || Equals(player, hitInfo.Initiator) && hitInfo.DamageTypes.GetMajorityDamageType() == DamageType.Bleeding))
 			{
 				// Don't update anything if
 				//   - Not a player
@@ -45,28 +45,29 @@
 			}
 
 			var newInjury = ResolveInjury(hitInfo);
-			Injury prevInjury;
-			if (!State.TryGetValue(player.UserId, out prevInjury))
+			if (!State.ContainsKey(player.UserId))
 			{
 				State.Add(player.UserId, newInjury);
 			}
 			else
 			{
-				// If the previous injury and the new injury were both self-inflicted
-				// and have the same damage type, don't update it (very spammy).
-				// This is probably a micro optimization, but fuck it.
-				if (
-					!(Equals(prevInjury.Attacker, player) && Equals(newInjury.Attacker, player)
-					  && prevInjury.PrimaryDamageType == newInjury.PrimaryDamageType))
-				{
-					State[player.UserId] = newInjury;
-				}
+				State[player.UserId] = newInjury;
 			}
 		}
 
-		public bool TryGetLastRelevantInjury(IBasePlayer player, out Injury injury)
+		public bool TryGetLastRelevantInjury(IBasePlayer player, TimeSpan timeframe, out Injury injury)
 		{
-			return State.TryGetValue(player.UserId, out injury);
+			if (!State.TryGetValue(player.UserId, out injury))
+			{
+				return false;
+			}
+
+			if (DateTime.UtcNow - injury.InjuryTime > timeframe)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		public Injury ResolveInjury(IHitInfo hitInfo)
