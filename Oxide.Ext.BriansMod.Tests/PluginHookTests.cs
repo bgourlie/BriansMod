@@ -34,10 +34,12 @@ namespace Oxide.Ext.BriansMod.Tests
 		{
 			public readonly Mock<IChat> chatMock;
 			public readonly Mock<IConfiguration> configMock;
+			public readonly Mock<IConsole> consoleMock;
 			public readonly Mock<IData> dataMock;
 			public readonly Mock<IDeaths> deathsMock;
 			public readonly Mock<IInjuries> injuriesMock;
 			public readonly Mock<ILogger> loggerMock;
+			public readonly Mock<IPlayers> playersMock;
 			public readonly Mock<ITraps> trapsMock;
 
 			public Factory()
@@ -49,6 +51,8 @@ namespace Oxide.Ext.BriansMod.Tests
 				injuriesMock = new Mock<IInjuries>();
 				dataMock = new Mock<IData>();
 				trapsMock = new Mock<ITraps>();
+				consoleMock = new Mock<IConsole>();
+				playersMock = new Mock<IPlayers>();
 			}
 
 			public BriansModPlugin GetPlugin()
@@ -60,7 +64,9 @@ namespace Oxide.Ext.BriansMod.Tests
 					configMock.Object,
 					deathsMock.Object,
 					injuriesMock.Object,
-					trapsMock.Object);
+					trapsMock.Object,
+					consoleMock.Object,
+					playersMock.Object);
 			}
 		}
 	}

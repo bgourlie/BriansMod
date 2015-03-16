@@ -25,8 +25,10 @@
 			return false;
 		}
 
-		public IEnumerable<IBasePlayer> ActivePlayers => from player in BasePlayer.activePlayerList select (IBasePlayer)new WrappedBasePlayer(player);
+		public IEnumerable<IBasePlayer> ActivePlayers
+			=> from player in BasePlayer.activePlayerList select (IBasePlayer) new WrappedBasePlayer(player);
 
-		public IEnumerable<IBasePlayer> Sleepers => from player in BasePlayer.activePlayerList select (IBasePlayer)new WrappedBasePlayer(player);
+		public IEnumerable<IBasePlayer> Sleepers
+			=> from player in BasePlayer.activePlayerList select (IBasePlayer) new WrappedBasePlayer(player);
 	}
 }
