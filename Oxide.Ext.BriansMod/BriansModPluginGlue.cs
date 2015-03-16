@@ -56,6 +56,18 @@
 #endif
 		}
 
+		[HookMethod("OnPlayerInit"), UsedImplicitly]
+        private void OnPlayerInit(BasePlayer player)
+        {
+			_chat.Broadcast("{0} has connected.", player.displayName);
+        }
+
+		[HookMethod("OnPlayerDisconnected"), UsedImplicitly]
+        private void OnPlayerDisconnected(BasePlayer player)
+        {
+			_chat.Broadcast("{0} has disconnected.", player.displayName);
+        }
+
 		[HookMethod("OnItemDeployed"), UsedImplicitly]
 		private void OnItemDeployed(Deployer deployer, BaseEntity deployedEntity)
 		{
