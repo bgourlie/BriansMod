@@ -2,6 +2,6 @@
 {
 	public interface IConfiguration
 	{
-		string DataDirectory { get; }
+		string DatabaseLocation { get; }
 	}
 }

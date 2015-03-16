@@ -89,7 +89,34 @@
 								0 as bestdistance,
 								COUNT(*) as numkills,
 								'trap' as weapon
-							FROM pvptrapdeaths";
+							FROM pvptrapdeaths
+							GROUP BY weapon 
+							HAVING COUNT(*) > 0";
+
+				cmd.ExecuteNonQuery();
+			}
+
+			using (var cmd = _conn.CreateCommand())
+			{
+				cmd.CommandText =
+					@" CREATE VIEW IF NOT EXISTS weaponstatsbyuser AS
+							SELECT 
+								killerid as userid,
+								MAX(distance) as bestdistance, 
+								COUNT(*) as numkills, 
+								weapon 
+							FROM pvpweapondeaths pw 
+							JOIN pvpdeaths p ON pw.rowid = p.rowid
+							GROUP BY userid, weapon
+							UNION SELECT
+								killerid as userid,
+								0 as bestdistance,
+								COUNT(*) as numkills,
+								'trap' as weapon
+							FROM pvptrapdeaths pt
+							JOIN pvpdeaths p ON pt.rowid = p.rowid
+							GROUP BY userid, weapon 
+							HAVING COUNT(*) > 0";
 
 				cmd.ExecuteNonQuery();
 			}
@@ -187,6 +214,25 @@
 			using (var cmd = _conn.CreateCommand())
 			{
 				cmd.CommandText = "SELECT bestdistance, numkills, weapon FROM weaponstats";
+				using (var reader = cmd.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						float maxDistance = reader.GetFloat(0);
+						int numKills = reader.GetInt32(1);
+						string weapon = reader.GetString(2);
+						yield return new WeaponStatsRow(weapon, numKills, maxDistance);
+					}
+				}
+			}
+		}
+
+		public IEnumerable<WeaponStatsRow> GetWeaponStatsByUser(ulong userId)
+		{
+			using (var cmd = _conn.CreateCommand())
+			{
+				cmd.CommandText = "SELECT bestdistance, numkills, weapon FROM weaponstatsbyuser WHERE userid = @userId";
+				cmd.Parameters.AddWithValue("@userId", userId);
 				using (var reader = cmd.ExecuteReader())
 				{
 					while (reader.Read())

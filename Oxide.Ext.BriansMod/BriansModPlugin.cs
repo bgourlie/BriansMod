@@ -1,13 +1,10 @@
 ﻿namespace Oxide.Ext.BriansMod
 {
-	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Linq;
 	using System.Text;
 	using Model;
 	using Services;
-	using Console = Services.Console;
 
 	public class BriansModPlugin
 	{
@@ -60,12 +57,7 @@
 
 		public void Init()
 		{
-			string filename = Path.Combine(_config.DataDirectory, "stats.db");
-			if (!filename.StartsWith(_config.DataDirectory, StringComparison.Ordinal))
-			{
-				throw new Exception("Only access to oxide directory!");
-			}
-			string connString = string.Format("Data Source={0};Version=3;", filename);
+			string connString = string.Format("Data Source={0};Version=3;", _config.DatabaseLocation);
 			_data.InitializeStore(connString);
 		}
 

@@ -13,7 +13,7 @@ namespace Oxide.Ext.BriansMod.Tests
 		public void init_should_initialize_data_store()
 		{
 			var factory = new Factory();
-			factory.configMock.Setup(c => c.DataDirectory).Returns("./");
+			factory.configMock.Setup(c => c.DatabaseLocation).Returns("./");
 			var plugin = factory.GetPlugin();
 			plugin.Init();
 			factory.dataMock.Verify(d => d.InitializeStore(It.IsAny<string>()), Times.Once());

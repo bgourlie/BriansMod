@@ -8,5 +8,6 @@
 		IEnumerable<IBasePlayer> ActivePlayers { get; }
 		IEnumerable<IBasePlayer> Sleepers { get; }
 		bool TryFindPlayerById(ulong userId, out IBasePlayer player);
+		PlayerFindResult FindPlayer(string startsWith);
 	}
 }

@@ -52,6 +52,51 @@ namespace Oxide.Ext.BriansMod.Tests
 			Assert.Equal(3, stats.Count);
 		}
 
+		[Fact]
+		private void get_weapon_stats_by_user_smoke_test()
+		{
+			var factory = new Factory();
+			var data = factory.GetDataService();
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "pistol", 12f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "pistol", 6f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "pistol", 13f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "shotgun", 3f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "shotgun", 1f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "shotgun", 6f, DateTime.UtcNow);
+			data.SaveTrapDeath(1, 1, 1f, 1f, 1, DateTime.UtcNow);
+			data.SaveTrapDeath(1, 1, 1f, 1f, 1, DateTime.UtcNow);
+			data.SaveTrapDeath(1, 1, 1f, 1f, 1, DateTime.UtcNow);
+			var stats = data.GetWeaponStatsByUser(1).ToList();
+			Assert.Equal(3, stats.Count);
+		}
+
+		[Fact]
+		private void get_weapon_stats_by_user_smoke_test2()
+		{
+			var factory = new Factory();
+			var data = factory.GetDataService();
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "pistol", 12f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "pistol", 6f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "pistol", 13f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "shotgun", 3f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "shotgun", 1f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 1, 1f, 1f, 2f, 2f, "shotgun", 6f, DateTime.UtcNow);
+			data.SaveTrapDeath(1, 1, 1f, 1f, 1, DateTime.UtcNow);
+			data.SaveTrapDeath(1, 1, 1f, 1f, 1, DateTime.UtcNow);
+			data.SaveTrapDeath(1, 1, 1f, 1f, 1, DateTime.UtcNow);
+			var stats = data.GetWeaponStatsByUser(2).ToList();
+			Assert.Equal(0, stats.Count);
+		}
+
+		[Fact]
+		private void get_weapon_stats_shouldnt_show_trap_kills_if_none_exists_regression_test()
+		{
+			var factory = new Factory();
+			var data = factory.GetDataService();
+			var stats = data.GetWeaponStats().ToList();
+			Assert.Equal(0, stats.Count);
+		}
+
 		public class Factory
 		{
 			public readonly Mock<ILogger> LoggerMock;

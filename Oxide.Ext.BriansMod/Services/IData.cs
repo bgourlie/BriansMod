@@ -15,6 +15,7 @@
 		void SaveTrapDeath(ulong victimId, ulong killerId, float victimLocationX, float victimLocationY, ulong trapId,
 			DateTime time);
 
+		IEnumerable<WeaponStatsRow> GetWeaponStatsByUser(ulong userId);
 		void SaveTrap(ulong trapId, ulong ownerId);
 		ulong GetTrapOwnerId(ulong trapId);
 		void SetTrapDestroyed(ulong trapId);

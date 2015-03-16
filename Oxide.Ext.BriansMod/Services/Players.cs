@@ -25,6 +25,24 @@
 			return false;
 		}
 
+		public PlayerFindResult FindPlayer(string startsWith)
+		{
+			var players =
+				ActivePlayers.Where(p => p.DisplayName.ToLowerInvariant().StartsWith(startsWith.ToLowerInvariant())).ToArray();
+
+			if (players.Length == 1)
+			{
+				return PlayerFindResult.NewFoundResult(players[0]);
+			}
+
+			if (players.Length > 1)
+			{
+				return PlayerFindResult.NewAmbiguousResult(players);
+			}
+
+			return PlayerFindResult.NewNotFoundResult();
+		}
+
 		public IEnumerable<IBasePlayer> ActivePlayers
 			=> from player in BasePlayer.activePlayerList select (IBasePlayer) new WrappedBasePlayer(player);
 

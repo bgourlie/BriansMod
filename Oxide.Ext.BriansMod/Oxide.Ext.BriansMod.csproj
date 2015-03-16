@@ -65,6 +65,7 @@
     <Compile Include="Model\Data\WeaponStatsRow.cs" />
     <Compile Include="Model\IConnection.cs" />
     <Compile Include="Model\IPlayerInventory.cs" />
+    <Compile Include="Model\PlayerFindResult.cs" />
     <Compile Include="Services\Chat.cs" />
     <Compile Include="Services\Configuration.cs" />
     <Compile Include="Services\Console.cs" />
