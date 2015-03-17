@@ -68,6 +68,7 @@
     <Compile Include="InjuriesTests.cs" />
     <Compile Include="PluginHookTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextTableTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

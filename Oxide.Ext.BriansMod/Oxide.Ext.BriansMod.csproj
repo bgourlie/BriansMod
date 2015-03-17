@@ -104,6 +104,7 @@
     <Compile Include="Model\IBaseEntity.cs" />
     <Compile Include="Model\ITrap.cs" />
     <Compile Include="Services\Wrapper.cs" />
+    <Compile Include="TextTable.cs" />
     <Compile Include="Wrappers\WrappedBaseCorpse.cs" />
     <Compile Include="Wrappers\WrappedBaseNpc.cs" />
     <Compile Include="Wrappers\WrappedAttackEntity.cs" />
