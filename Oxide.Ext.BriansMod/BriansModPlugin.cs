@@ -114,21 +114,13 @@
 		public void OnStats(IBasePlayer player)
 		{
 			var stats = _data.GetWeaponStats().ToList();
-			_chat.Send(player, "View stats in the F1 console.");
-
-			var sb = new StringBuilder();
+			var table = new TextTable("Weapon", "Total Kills", "Best Kill Distance");
 			foreach (var stat in stats)
 			{
-				sb.AppendLine("--------");
-				sb.AppendLine(stat.Weapon);
-				sb.AppendLine("--------");
-				if (stat.BestDistance > 0f)
-				{
-					sb.AppendLine(string.Format("Longest Kill: {0} meters", stat.BestDistance));
-				}
-				sb.AppendLine(string.Format("Total Kills: {0}", stat.NumKills));
+				table.AddRow(stat.Weapon, stat.NumKills, stat.BestDistance);
 			}
-			_console.Send(player, sb.ToString());
+			_chat.Send(player, "View stats in the F1 console.");
+			_console.Send(player, table.ToString());
 		}
 
 		public void OnWho(IBasePlayer player)
