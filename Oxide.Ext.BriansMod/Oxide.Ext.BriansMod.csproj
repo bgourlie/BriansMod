@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BriansModPlugin.cs" />
+    <Compile Include="Model\Data\LeaderBoardRow.cs" />
     <Compile Include="Model\Data\PvpDeathRow.cs" />
     <Compile Include="Model\Data\WeaponStatsRow.cs" />
     <Compile Include="Model\Rust\Contracts\IConnection.cs" />

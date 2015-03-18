@@ -36,6 +36,30 @@ namespace Oxide.Ext.BriansMod.Tests
 		}
 
 		[Fact]
+		private void get_leader_board_smoke_test()
+		{
+			var factory = new Factory();
+			var data = factory.GetDataService();
+			data.SaveWeaponDeath(1, 2, 1f, 1f, 2f, 2f, "pistol", 12.1f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 2, 1f, 1f, 2f, 2f, "pistol", 6.2f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 2, 1f, 1f, 2f, 2f, "pistol", 1.3f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 2, 1f, 1f, 2f, 2f, "shotgun", 3.4f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 2, 1f, 1f, 2f, 2f, "shotgun", 1.5f, DateTime.UtcNow);
+			data.SaveWeaponDeath(1, 2, 1f, 1f, 2f, 2f, "shotgun", 6.6f, DateTime.UtcNow);
+			data.SaveWeaponDeath(2, 1, 1f, 1f, 5f, 2f, "pistol", 12.7f, DateTime.UtcNow);
+			data.SaveWeaponDeath(2, 1, 1f, 1f, 2f, 2f, "pistol", 6.8f, DateTime.UtcNow);
+			data.SaveWeaponDeath(2, 1, 1f, 1f, 2f, 2f, "pistol", 13.9f, DateTime.UtcNow);
+			data.SaveWeaponDeath(2, 1, 1f, 1f, 2f, 2f, "shotgun", 3.11f, DateTime.UtcNow);
+			data.SaveWeaponDeath(2, 1, 1f, 1f, 2f, 2f, "shotgun", 1.12f, DateTime.UtcNow);
+			data.SaveWeaponDeath(2, 1, 1f, 1f, 2f, 2f, "shotgun", 6.13f, DateTime.UtcNow);
+			data.SaveTrapDeath(2, 1, 1f, 1f, 1, DateTime.UtcNow);
+			data.SaveTrapDeath(2, 1, 1f, 1f, 1, DateTime.UtcNow);
+			data.SaveTrapDeath(2, 1, 1f, 1f, 1, DateTime.UtcNow);
+			var stats = data.GetLeaderBoard().ToList();
+			Assert.Equal(2, stats.Count);
+		}
+
+		[Fact]
 		private void get_weapon_stats_smoke_test()
 		{
 			var factory = new Factory();

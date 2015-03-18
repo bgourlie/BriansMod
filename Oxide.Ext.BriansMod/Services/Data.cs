@@ -134,6 +134,32 @@
 
 				cmd.ExecuteNonQuery();
 			}
+
+			using (var cmd = _conn.CreateCommand())
+			{
+				cmd.CommandText =
+					@"	DROP VIEW IF EXISTS leaderboard;
+						CREATE VIEW leaderboard AS
+						  SELECT
+							killerid                AS userid,
+							count(*)                AS kills,
+							deaths,
+							count(*) * 1.0 / deaths AS kdr
+						  FROM pvpdeaths p1
+							INNER JOIN
+							(
+							  SELECT
+								victimid AS userid,
+								count(*) AS deaths
+							  FROM pvpdeaths
+							  GROUP BY victimid
+							) p2 ON p1.killerid = p2.userid
+						  GROUP BY userid
+						  ORDER BY kills
+							DESC;";
+
+				cmd.ExecuteNonQuery();
+			}
 		}
 
 		public void SaveWeaponDeath(ulong victimId, ulong killerId, float victimLocationX, float victimLocationY,
@@ -239,6 +265,27 @@
 						// This could def cause issues...
 						var bestDistanceUser = (ulong) reader.GetInt64(3);
 						yield return new WeaponStatsRow(weapon, numKills, maxDistance, bestDistanceUser);
+					}
+				}
+			}
+		}
+
+		public IEnumerable<LeaderBoardRow> GetLeaderBoard()
+		{
+			using (var cmd = _conn.CreateCommand())
+			{
+				cmd.CommandText = "SELECT userid, kills, deaths, kdr FROM leaderboard";
+				using (var reader = cmd.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						// SQLiteDataReader doesn't have a GetUInt64... so GetInt64 and casting.
+						// This could def cause issues...
+						var userId = (ulong) reader.GetInt64(0);
+						int numKills = reader.GetInt32(1);
+						int numDeaths = reader.GetInt32(2);
+						float killDeathRatio = reader.GetFloat(3);
+						yield return new LeaderBoardRow(userId, numKills, numDeaths, killDeathRatio);
 					}
 				}
 			}

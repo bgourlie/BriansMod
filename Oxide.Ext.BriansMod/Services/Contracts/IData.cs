@@ -20,5 +20,6 @@
 		ulong GetTrapOwnerId(ulong trapId);
 		void SetTrapDestroyed(ulong trapId);
 		IEnumerable<WeaponStatsRow> GetWeaponStats();
+		IEnumerable<LeaderBoardRow> GetLeaderBoard();
 	}
 }

@@ -113,31 +113,40 @@
 			_chat.Broadcast("{0} has disconnected.", player.DisplayName);
 		}
 
+		public void OnLeaderBoard(IBasePlayer player)
+		{
+			var stats = _data.GetLeaderBoard().ToList();
+			if (stats.Count == 0)
+			{
+				_chat.Send(player, "There are no leader board data to display right now.");
+				return;
+			}
+
+			var table = new TextTable("Player", "Kills", "Deaths", "KDR");
+			foreach (var stat in stats)
+			{
+				string displayName = GetDisplayName(stat.UserId);
+				table.AddRow(displayName, stat.Kills, stat.Deaths, stat.KillDeathRatio);
+			}
+
+			_chat.Send(player, "View leader board in the F1 console.");
+			_console.Send(player, table.ToString());
+		}
+
 		public void OnStats(IBasePlayer player)
 		{
 			var stats = _data.GetWeaponStats().ToList();
+			if (stats.Count == 0)
+			{
+				_chat.Send(player, "There are no stats to display right now.");
+				return;
+			}
+
 			var table = new TextTable("Weapon", "Total Kills", "Best Kill Distance", "Distance Record Owner");
 			foreach (var stat in stats)
 			{
-				string recordOwnerName;
-				if (stat.BestDistanceUser == 0)
-				{
-					recordOwnerName = "N/A";
-				}
-				else
-				{
-					IBasePlayer recordOwner;
-					if (_players.TryFindPlayerById(stat.BestDistanceUser, out recordOwner))
-					{
-						recordOwnerName = recordOwner.DisplayName;
-					}
-					else
-					{
-						recordOwnerName = "[Name Unavailable]";
-					}
-				}
-
-				table.AddRow(stat.Weapon, stat.NumKills, stat.BestDistance, recordOwnerName);
+				string displayName = GetDisplayName(stat.BestDistanceUser);
+				table.AddRow(stat.Weapon, stat.NumKills, stat.BestDistance, displayName);
 			}
 
 			_chat.Send(player, "View stats in the F1 console.");
@@ -160,6 +169,29 @@
 			}
 			sb.AppendLine();
 			_console.Send(player, sb.ToString());
+		}
+
+		private string GetDisplayName(ulong userId)
+		{
+			string displayName;
+			if (userId == 0)
+			{
+				displayName = "N/A";
+			}
+			else
+			{
+				IBasePlayer recordOwner;
+				if (_players.TryFindPlayerById(userId, out recordOwner))
+				{
+					displayName = recordOwner.DisplayName;
+				}
+				else
+				{
+					displayName = "[Name Unavailable]";
+				}
+			}
+
+			return displayName;
 		}
 
 		#region Debug Only Methods (will not be hooked in release)

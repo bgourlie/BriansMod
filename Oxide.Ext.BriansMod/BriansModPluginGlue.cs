@@ -41,6 +41,7 @@
 		{
 			_plugin.Init();
 			_chat.AddCommand("stats", this, "OnStats");
+			_chat.AddCommand("leaderboard", this, "OnLeaderBoard");
 			_chat.AddCommand("who", this, "OnWho");
 #if DEBUG
 			// Add a bunch of commands that make debugging easier
@@ -97,6 +98,12 @@
 		private void OnStats(BasePlayer player, string command, string[] args)
 		{
 			_plugin.OnStats(new WrappedBasePlayer(player));
+		}
+
+		[HookMethod("OnLeaderBoard"), UsedImplicitly]
+		private void OnLeaderBoard(BasePlayer player, string command, string[] args)
+		{
+			_plugin.OnLeaderBoard(new WrappedBasePlayer(player));
 		}
 
 		// Add a bunch of commands that make debugging easier
