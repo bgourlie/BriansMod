@@ -79,20 +79,31 @@
 			using (var cmd = _conn.CreateCommand())
 			{
 				cmd.CommandText =
-					@" CREATE VIEW IF NOT EXISTS weaponstats AS
-							SELECT 
-								MAX(distance) as bestdistance, 
-								COUNT(*) as numkills, 
-								weapon 
-							FROM pvpweapondeaths 
-							GROUP BY weapon
-							UNION SELECT
-								0 as bestdistance,
-								COUNT(*) as numkills,
-								'trap' as weapon
+					@"CREATE VIEW IF NOT EXISTS weaponstats AS
+					  SELECT
+						killerid AS bestdistanceuser,
+						bestdistance,
+						numkills,
+						weapon
+					  FROM pvpweapondeaths w1
+						JOIN pvpdeaths pvp ON w1.rowid = pvp.rowid
+						INNER JOIN
+						(
+						  SELECT
+							MAX(distance) AS bestdistance,
+							COUNT(*)      AS numkills
+						  FROM pvpweapondeaths
+						  GROUP BY weapon
+						) w2 ON w1.distance = w2.bestdistance
+						GROUP BY weapon
+					  UNION SELECT
+							  0        AS bestdistanceuser,
+							  0        AS bestdistance,
+							  COUNT(*) AS numkills,
+							  'trap'   AS weapon
 							FROM pvptrapdeaths
-							GROUP BY weapon 
-							HAVING COUNT(*) > 0";
+							GROUP BY weapon
+							HAVING COUNT(*) > 0;";
 
 				cmd.ExecuteNonQuery();
 			}
@@ -214,7 +225,7 @@
 		{
 			using (var cmd = _conn.CreateCommand())
 			{
-				cmd.CommandText = "SELECT bestdistance, numkills, weapon FROM weaponstats";
+				cmd.CommandText = "SELECT bestdistance, numkills, weapon, bestdistanceuser FROM weaponstats";
 				using (var reader = cmd.ExecuteReader())
 				{
 					while (reader.Read())
@@ -222,7 +233,10 @@
 						float maxDistance = reader.GetFloat(0);
 						int numKills = reader.GetInt32(1);
 						string weapon = reader.GetString(2);
-						yield return new WeaponStatsRow(weapon, numKills, maxDistance);
+						// SQLiteDataReader doesn't have a GetUInt64... so GetInt64 and casting.
+						// This could def cause issues...
+						var bestDistanceUser = (ulong) reader.GetInt64(3);
+						yield return new WeaponStatsRow(weapon, numKills, maxDistance, bestDistanceUser);
 					}
 				}
 			}
@@ -241,7 +255,7 @@
 						float maxDistance = reader.GetFloat(0);
 						int numKills = reader.GetInt32(1);
 						string weapon = reader.GetString(2);
-						yield return new WeaponStatsRow(weapon, numKills, maxDistance);
+						yield return new WeaponStatsRow(weapon, numKills, maxDistance, userId);
 					}
 				}
 			}

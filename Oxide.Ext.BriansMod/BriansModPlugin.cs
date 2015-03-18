@@ -116,11 +116,30 @@
 		public void OnStats(IBasePlayer player)
 		{
 			var stats = _data.GetWeaponStats().ToList();
-			var table = new TextTable("Weapon", "Total Kills", "Best Kill Distance");
+			var table = new TextTable("Weapon", "Total Kills", "Best Kill Distance", "Distance Record Owner");
 			foreach (var stat in stats)
 			{
-				table.AddRow(stat.Weapon, stat.NumKills, stat.BestDistance);
+				string recordOwnerName;
+				if (stat.BestDistanceUser == 0)
+				{
+					recordOwnerName = "N/A";
+				}
+				else
+				{
+					IBasePlayer recordOwner;
+					if (_players.TryFindPlayerById(stat.BestDistanceUser, out recordOwner))
+					{
+						recordOwnerName = recordOwner.DisplayName;
+					}
+					else
+					{
+						recordOwnerName = "[Name Unavailable]";
+					}
+				}
+
+				table.AddRow(stat.Weapon, stat.NumKills, stat.BestDistance, recordOwnerName);
 			}
+
 			_chat.Send(player, "View stats in the F1 console.");
 			_console.Send(player, table.ToString());
 		}
