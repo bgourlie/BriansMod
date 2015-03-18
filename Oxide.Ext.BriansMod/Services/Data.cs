@@ -79,7 +79,8 @@
 			using (var cmd = _conn.CreateCommand())
 			{
 				cmd.CommandText =
-					@"CREATE VIEW IF NOT EXISTS weaponstats AS
+					@"DROP VIEW IF EXISTS weaponstats;
+					  CREATE VIEW weaponstats AS
 					  SELECT
 						killerid AS bestdistanceuser,
 						bestdistance,
@@ -111,7 +112,8 @@
 			using (var cmd = _conn.CreateCommand())
 			{
 				cmd.CommandText =
-					@" CREATE VIEW IF NOT EXISTS weaponstatsbyuser AS
+					@"  DROP VIEW IF EXISTS weaponstatsbyuser; 
+					    CREATE VIEW weaponstatsbyuser AS
 							SELECT 
 								killerid as userid,
 								MAX(distance) as bestdistance, 
