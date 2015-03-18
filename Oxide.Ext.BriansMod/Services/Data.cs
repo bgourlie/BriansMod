@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Data.SQLite;
+	using Contracts;
 	using Model.Data;
 
 	public class Data : IData

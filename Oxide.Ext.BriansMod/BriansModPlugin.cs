@@ -4,7 +4,9 @@
 	using System.Linq;
 	using System.Text;
 	using Model;
+	using Model.Rust.Contracts;
 	using Services;
+	using Services.Contracts;
 
 	public class BriansModPlugin
 	{

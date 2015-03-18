@@ -6,6 +6,7 @@ namespace Oxide.Ext.BriansMod.Tests
 	using System.Linq;
 	using Moq;
 	using Services;
+	using Services.Contracts;
 	using Xunit;
 
 	public class DataTests

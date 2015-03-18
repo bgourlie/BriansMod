@@ -1,5 +1,6 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
+	using Contracts;
 	using Core;
 	using Core.Logging;
 

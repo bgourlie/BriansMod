@@ -2,8 +2,10 @@
 {
 	using System.Collections.Generic;
 	using System.Linq;
+	using Contracts;
 	using Model;
-	using Wrappers;
+	using Model.Rust;
+	using Model.Rust.Contracts;
 
 	public class Players : IPlayers
 	{

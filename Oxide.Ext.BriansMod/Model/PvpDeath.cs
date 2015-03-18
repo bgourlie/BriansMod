@@ -2,6 +2,7 @@
 {
 	using System;
 	using JetBrains.Annotations;
+	using Rust.Contracts;
 
 	public class PvpDeath
 	{

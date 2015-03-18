@@ -2,6 +2,7 @@
 {
 	using Moq;
 	using Services;
+	using Services.Contracts;
 	using Xunit;
 
 	public class InjuriesTests

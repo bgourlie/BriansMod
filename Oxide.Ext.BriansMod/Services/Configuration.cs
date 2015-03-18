@@ -1,6 +1,7 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System.IO;
+	using Contracts;
 	using Core;
 
 	public class Configuration : IConfiguration

@@ -2,9 +2,9 @@
 
 namespace Oxide.Ext.BriansMod.Tests
 {
-	using Model;
+	using Model.Rust.Contracts;
 	using Moq;
-	using Services;
+	using Services.Contracts;
 	using Xunit;
 
 	public class PluginHookTests

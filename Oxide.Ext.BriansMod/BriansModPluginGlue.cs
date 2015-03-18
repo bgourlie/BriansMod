@@ -3,11 +3,12 @@
 	using System.Linq;
 	using Core.Plugins;
 	using JetBrains.Annotations;
-	using Model;
+	using Model.Rust;
+	using Model.Rust.Contracts;
 	using Network;
 	using Services;
+	using Services.Contracts;
 	using UnityEngine;
-	using Wrappers;
 
 	public class BriansModPluginGlue : CSPlugin
 	{

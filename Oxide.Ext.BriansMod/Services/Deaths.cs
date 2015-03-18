@@ -2,7 +2,9 @@
 {
 	using System;
 	using System.Text;
+	using Contracts;
 	using Model;
+	using Model.Rust.Contracts;
 
 	public class Deaths : IDeaths
 	{

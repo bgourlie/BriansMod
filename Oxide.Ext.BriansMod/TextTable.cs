@@ -29,7 +29,7 @@
 		{
 			var sb = new StringBuilder();
 			var colWidths = _columns.Select(c => c.Length).ToArray();
-			for(var i = 0; i < _rows.Count; i++)
+			for (var i = 0; i < _rows.Count; i++)
 			{
 				for (var j = 0; j < _rows[i].Count; j++)
 				{
@@ -40,13 +40,13 @@
 				}
 			}
 
-			var totalWidth = colWidths.Aggregate((total, width) => total + width);
-			for(var i = 0; i < _columns.Length; i++)
+			int totalWidth = colWidths.Aggregate((total, width) => total + width);
+			for (var i = 0; i < _columns.Length; i++)
 			{
 				sb.AppendFormat("| {0}{1} ", _columns[i], new string(' ', colWidths[i] - _columns[i].Length));
 			}
 			sb.AppendLine();
-			sb.AppendLine(new string('-', totalWidth + (_columns.Length * 3)));
+			sb.AppendLine(new string('-', totalWidth + (_columns.Length*3)));
 
 			foreach (var row in _rows)
 			{

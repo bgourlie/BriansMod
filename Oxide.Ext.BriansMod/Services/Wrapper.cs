@@ -1,8 +1,9 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
-	using Model;
+	using Contracts;
+	using Model.Rust;
+	using Model.Rust.Contracts;
 	using UnityEngine;
-	using Wrappers;
 
 	public class Wrapper : IWrapper
 	{

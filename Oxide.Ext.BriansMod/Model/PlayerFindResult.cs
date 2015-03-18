@@ -1,5 +1,7 @@
 ﻿namespace Oxide.Ext.BriansMod.Model
 {
+	using Rust.Contracts;
+
 	public class PlayerFindResult
 	{
 		public readonly bool Found;

@@ -3,6 +3,7 @@
 	using System;
 	using global::Rust;
 	using JetBrains.Annotations;
+	using Rust.Contracts;
 
 	public class Injury
 	{

@@ -2,8 +2,10 @@
 {
 	using System;
 	using System.Collections.Generic;
+	using Contracts;
 	using global::Rust;
 	using Model;
+	using Model.Rust.Contracts;
 	using UnityEngine;
 
 	public class Injuries : IInjuries

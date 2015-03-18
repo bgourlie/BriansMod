@@ -1,8 +1,9 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
+	using Contracts;
 	using Core;
 	using Core.Plugins;
-	using Model;
+	using Model.Rust.Contracts;
 	using Rust.Libraries;
 
 	public class Console : IConsole

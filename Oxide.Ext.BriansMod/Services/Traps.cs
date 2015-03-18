@@ -1,7 +1,8 @@
 ﻿namespace Oxide.Ext.BriansMod.Services
 {
 	using System;
-	using Model;
+	using Contracts;
+	using Model.Rust.Contracts;
 
 	public class Traps : ITraps
 	{
