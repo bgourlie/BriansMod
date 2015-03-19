@@ -81,30 +81,34 @@
 				cmd.CommandText =
 					@"DROP VIEW IF EXISTS weaponstats;
 					  CREATE VIEW weaponstats AS
-					  SELECT
-						killerid AS bestdistanceuser,
-						bestdistance,
-						numkills,
-						weapon
-					  FROM pvpweapondeaths w1
-						JOIN pvpdeaths pvp ON w1.rowid = pvp.rowid
-						INNER JOIN
-						(
-						  SELECT
-							MAX(distance) AS bestdistance,
-							COUNT(*)      AS numkills
-						  FROM pvpweapondeaths
-						  GROUP BY weapon
-						) w2 ON w1.distance = w2.bestdistance
-						GROUP BY weapon
-					  UNION SELECT
-							  0        AS bestdistanceuser,
-							  0        AS bestdistance,
-							  COUNT(*) AS numkills,
-							  'trap'   AS weapon
-							FROM pvptrapdeaths
-							GROUP BY weapon
-							HAVING COUNT(*) > 0;";
+						SELECT *
+						FROM
+						  (SELECT
+							 killerid AS bestdistanceuser,
+							 bestdistance,
+							 numkills,
+							 weapon
+						   FROM pvpweapondeaths w1
+							 JOIN pvpdeaths pvp ON w1.rowid = pvp.rowid
+							 INNER JOIN
+							 (
+							   SELECT
+								 MAX(distance) AS bestdistance,
+								 COUNT(*)      AS numkills
+							   FROM pvpweapondeaths
+							   GROUP BY weapon
+							 ) w2 ON w1.distance = w2.bestdistance
+						   GROUP BY weapon
+						   UNION SELECT
+								   0        AS bestdistanceuser,
+								   0        AS bestdistance,
+								   COUNT(*) AS numkills,
+								   'trap'   AS weapon
+								 FROM pvptrapdeaths
+								 GROUP BY weapon
+								 HAVING COUNT(*) > 0)
+						ORDER BY numkills
+						  DESC;";
 
 				cmd.ExecuteNonQuery();
 			}
@@ -114,23 +118,27 @@
 				cmd.CommandText =
 					@"  DROP VIEW IF EXISTS weaponstatsbyuser; 
 					    CREATE VIEW weaponstatsbyuser AS
-							SELECT 
-								killerid as userid,
-								MAX(distance) as bestdistance, 
-								COUNT(*) as numkills, 
-								weapon 
-							FROM pvpweapondeaths pw 
-							JOIN pvpdeaths p ON pw.rowid = p.rowid
-							GROUP BY userid, weapon
-							UNION SELECT
-								killerid as userid,
-								0 as bestdistance,
-								COUNT(*) as numkills,
-								'trap' as weapon
-							FROM pvptrapdeaths pt
-							JOIN pvpdeaths p ON pt.rowid = p.rowid
-							GROUP BY userid, weapon 
-							HAVING COUNT(*) > 0";
+						SELECT *
+						FROM
+						  (SELECT
+							 killerid      AS userid,
+							 MAX(distance) AS bestdistance,
+							 COUNT(*)      AS numkills,
+							 weapon
+						   FROM pvpweapondeaths pw
+							 JOIN pvpdeaths p ON pw.rowid = p.rowid
+						   GROUP BY userid, weapon
+						   UNION SELECT
+								   killerid AS userid,
+								   0        AS bestdistance,
+								   COUNT(*) AS numkills,
+								   'trap'   AS weapon
+								 FROM pvptrapdeaths pt
+								   JOIN pvpdeaths p ON pt.rowid = p.rowid
+								 GROUP BY userid, weapon
+								 HAVING COUNT(*) > 0)
+						ORDER BY numkills
+						  DESC";
 
 				cmd.ExecuteNonQuery();
 			}
