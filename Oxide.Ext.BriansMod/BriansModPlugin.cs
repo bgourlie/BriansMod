@@ -72,7 +72,7 @@
 			}
 		}
 
-		public void OnEntityAttacked(IMonoBehavior entity, IHitInfo hitInfo)
+		public void OnEntityTakeDamage(IMonoBehavior entity, IHitInfo hitInfo)
 		{
 			var player = entity as IBasePlayer;
 			if (player != null)
@@ -194,7 +194,7 @@
 			return displayName;
 		}
 
-		#region Debug Only Methods (will not be hooked in release)
+		//#region Debug Only Methods (will not be hooked in release)
 
 		public void OnTp(IBasePlayer player, List<IConnection> conns)
 		{
@@ -220,9 +220,9 @@
 			player.Inventory.GiveItem(4131848, 1000); // pistol rounds
 			player.Inventory.GiveItem(-2076242409, 1000); // rifle rounds
 			player.Inventory.GiveItem(-1536699499, 1000); // shotgun rounds
-			player.Inventory.GiveItem(117733644, 100); // arrows
+			player.Inventory.GiveItem(117733644, 1000); // arrows
 			player.Inventory.GiveItem(-1355335174); // bow
-			player.Inventory.GiveItem(498591726, 10); // explosives
+			player.Inventory.GiveItem(498591726, 100); // explosives
 			player.Inventory.GiveItem(-809130169); // building plan
 			player.Inventory.GiveItem(-1224598842); // hammer plan
 			player.Inventory.GiveItem(-51678842, 100); // lanterns
@@ -231,13 +231,16 @@
 			player.Inventory.GiveItem(698465195); // revolver
 			player.Inventory.GiveItem(-964239615); // shotgun
 			player.Inventory.GiveItem(2085492774); // thompson
-			player.Inventory.GiveItem(1091325318, 20); // snap traps
-			player.Inventory.GiveItem(3655341, 10000); // wood
+			player.Inventory.GiveItem(1091325318, 200); // snap traps
+			player.Inventory.GiveItem(3655341, 100000); // wood
 			player.Inventory.GiveItem(-1153983671, 20); // wolf meat
-			player.Inventory.GiveItem(-892070738, 10000); // stones
-			player.Inventory.GiveItem(-351194901, 10000); // metal frags
+			player.Inventory.GiveItem(-892070738, 100000); // stones
+			player.Inventory.GiveItem(-351194901, 100000); // metal frags
+			player.Inventory.GiveItem(-2016319317); // rocket launcher
+			player.Inventory.GiveItem(1489877204, 1000); // rockets
+			player.Inventory.GiveItem(-1308622549, 1000); // f1 grenade
 		}
 
-		#endregion
+		//#endregion
 	}
 }

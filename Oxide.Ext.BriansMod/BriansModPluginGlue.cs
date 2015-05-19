@@ -43,13 +43,13 @@
 			_chat.AddCommand("stats", this, "OnStats");
 			_chat.AddCommand("leaderboard", this, "OnLeaderBoard");
 			_chat.AddCommand("who", this, "OnWho");
-#if DEBUG
+//#if DEBUG
 			// Add a bunch of commands that make debugging easier
-			_logger.Warn(Module, "BUILT IN DEBUG MODE.  DO NOT USE ON PRODUCTION SERVERS.");
+			//_logger.Warn(Module, "BUILT IN DEBUG MODE.  DO NOT USE ON PRODUCTION SERVERS.");
 			_chat.AddCommand("tp", this, "OnTp");
 			_chat.AddCommand("arm", this, "OnArm");
 			_console.AddCommand("bmod.listitems", this, "OnListItems");
-#endif
+//#endif
 		}
 
 		[HookMethod("OnPlayerInit"), UsedImplicitly]
@@ -74,13 +74,13 @@
 			}
 		}
 
-		[HookMethod("OnEntityAttacked"), UsedImplicitly]
-		private void OnEntityAttacked(MonoBehaviour entity, HitInfo hitInfo)
+		[HookMethod("OnEntityTakeDamage"), UsedImplicitly]
+		private void OnEntityTakeDamage(MonoBehaviour entity, HitInfo hitInfo)
 		{
 			IMonoBehavior wrappedEntity;
 			if (_wrapper.TryWrap(entity, out wrappedEntity))
 			{
-				_plugin.OnEntityAttacked(wrappedEntity, new WrappedHitInfo(hitInfo));
+				_plugin.OnEntityTakeDamage(wrappedEntity, new WrappedHitInfo(hitInfo));
 			}
 		}
 
@@ -113,7 +113,7 @@
 			_plugin.OnWho(new WrappedBasePlayer(player));
 		}
 
-#if DEBUG
+//#if DEBUG
 		// Add a bunch of commands that make debugging easier
 		[HookMethod("OnTp"), UsedImplicitly]
 		private void OnTp(BasePlayer player, string command, string[] args)
@@ -133,6 +133,6 @@
 		{
 			_plugin.OnListItems(new WrappedBasePlayer(args.Player()));
 		}
-#endif
+//#endif
 	}
 }
